@@ -185,11 +185,15 @@ defmodule Stargate.Vessel do
           Enum.find(request.headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
 
         ws_ext = String.replace(ws_ext, " ", "")
+        ws_ext = String.split(ws_ext, ",", trim: true)
 
         ws_ext =
-          Enum.reduce(String.split(ws_ext, ""), %{}, fn line, a ->
-            [k, v] = String.split(line, "=")
-            Map.put(a, k, v)
+          Enum.reduce(ws_ext, %{}, fn ext, acc ->
+            case String.split(ext, ";", trim: true) do
+              [h | [] = _t] -> Map.put(acc, h, "")
+              [h | t] -> Map.put(acc, h, t)
+              _ -> acc
+            end
           end)
 
         extra_headers =
