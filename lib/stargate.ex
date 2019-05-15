@@ -15,6 +15,10 @@ defmodule Stargate do
   }
 
   defmodule InvalidConfigurationError do
+    @moduledoc """
+    The error that is raised when an invalid
+    configuration is passed to `Stargate.warp_in/1`.
+    """
     defexception [:message]
 
     @impl true
