@@ -54,8 +54,9 @@ defmodule Stargate.Vessel do
   end
 
   def on_tcp(config = %{state: :ws}, bin) do
+    IO.inspect(bin)
     buf = Map.get(config, :buf, <<>>) <> bin
-    IO.inspect({:ws_bin, buf})
+    IO.inspect(buf)
     config
   end
 
@@ -236,8 +237,13 @@ defmodule Stargate.Vessel do
             config
           end
 
-        response_bin = build_http_response(101, reply_headers, "")
-        :ok = config.transport.send(config.socket, response_bin)
+        handshake_response =
+          <<"HTTP/1.1 101 Switching Protocols\r\n"::binary,
+            Enum.reduce(reply_headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)::binary,
+            "\r\n">>
+
+        :ok = config.transport.send(config.socket, handshake_response)
+
         config
     end
   end

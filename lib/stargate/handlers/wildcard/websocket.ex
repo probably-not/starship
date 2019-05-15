@@ -1,11 +1,10 @@
 defmodule Stargate.Handler.Wildcard.Websocket do
-  def connect(%{path: path}, s) do
-    IO.inspect({"unhandled ws connect", __MODULE__, path})
-    {:ok, s}
+  def connect(_conn, config) do
+    {:ok, config}
   end
 
-  def payload(bin, s) do
+  def payload(bin, config) do
     IO.inspect({"unhandled ws payload", __MODULE__, bin})
-    s
+    config
   end
 end
