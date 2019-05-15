@@ -11,12 +11,11 @@ defmodule Stargate do
     hosts: %{
       {:http, "*"} => {Stargate.Handler.Wildcard.Http, %{}},
       {:ws, "*"} => {Stargate.Handler.Wildcard.Websocket, %{}}
-    },
-    ssl_opts: nil
+    }
   }
 
   defmodule InvalidConfigurationError do
-    defexception [:message, :provided_configuration, :default_configuration]
+    defexception [:message]
 
     @impl true
     def exception(attrs) do
@@ -25,13 +24,12 @@ defmodule Stargate do
       Please see the default configuration
       and make sure that your configuration
       contains all of the necessary values.
+
+      Provided Configuration: #{inspect(attrs[:provided_config])}
+      Default Configuration: #{inspect(attrs[:default_config])}
       """
 
-      %InvalidConfigurationError{
-        message: message,
-        provided_configuration: attrs[:provided_config],
-        default_configuration: attrs[:default_config]
-      }
+      %InvalidConfigurationError{message: message}
     end
   end
 
@@ -115,7 +113,16 @@ defmodule Stargate do
 
   defp validate_config!(%{ip: ip, port: port, hosts: hosts} = config)
        when is_tuple(ip) and is_integer(port) and is_map(hosts) do
-    Map.put_new(config, :hosts, @default_configuration.hosts)
+    config
+    |> Map.put_new(:hosts, Map.merge(@default_configuration.hosts, hosts))
+    |> Map.put_new(:ssl_opts, nil)
+  end
+
+  defp validate_config!(%{ip: ip, port: port} = config)
+       when is_tuple(ip) and is_integer(port) do
+    config
+    |> Map.put(:hosts, @default_configuration.hosts)
+    |> Map.put_new(:ssl_opts, nil)
   end
 
   defp validate_config!(config) do
