@@ -15,7 +15,7 @@ defmodule Stargate do
 
     hosts =
       if !hosts[{:ws, "*"}] do
-        Map.put(hosts, {:ws, "*"}, {Stargate.Handler.Wildcard.WS, %{}})
+        Map.put(hosts, {:ws, "*"}, {Stargate.Handler.Wildcard.Websocket, %{}})
       else
         hosts
       end
@@ -50,6 +50,6 @@ defmodule Stargate do
 
     config = Map.merge(config, %{listen_socket: lsocket, buf: <<>>})
 
-    :erlang.spawn(Stargate.Acceptor.Sup, :loop, [config])
+    :erlang.spawn(Stargate.Acceptor.Supervisor, :loop, [config])
   end
 end
