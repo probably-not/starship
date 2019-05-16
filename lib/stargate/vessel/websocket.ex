@@ -2,11 +2,22 @@ defmodule Stargate.Vessel.Websocket do
   @moduledoc false
 
   alias Stargate.Vessel
+  alias __MODULE__
   import Vessel.Response, only: [build_response: 3]
+
+  def handle_ws_frame(frame, config) do
+    frame = Map.get(config, :buf, <<>>) <> frame
+
+    case Websocket.Frame.parse_frame(frame) do
+      {:ok, :final, :masked, :close, ""} -> config.transport.close(config.socket)
+      {:ok, :final, :masked, :text, text} -> config.handler.handle_text_frame(text, config)
+    end
+  end
 
   def handle_ws_handshake(request, config) do
     {_, host} = Enum.find(request.headers, &(elem(&1, 0) == "host"))
     {ws_handler, opts} = Vessel.get_host_handler(:ws, host, request.path, config.hosts)
+    config = Map.put(config, :handler, ws_handler)
 
     case :erlang.apply(ws_handler, :connect, [request, config]) do
       :reject ->
