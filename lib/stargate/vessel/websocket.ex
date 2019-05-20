@@ -34,11 +34,11 @@ defmodule Stargate.Vessel.Websocket do
   end
 
   def successful_handshake(conn, config, opts) do
-    {headers, should_compress} = build_reply_headers(conn.headers, opts)
+    {headers, should_compress} = build_handshake_reply_headers(conn.headers, opts)
 
     config =
       if should_compress do
-        compress(config, opts)
+        compress_handshake(config, opts)
       else
         config
       end
@@ -51,7 +51,7 @@ defmodule Stargate.Vessel.Websocket do
     config
   end
 
-  def build_reply_headers(headers, opts) do
+  def build_handshake_reply_headers(headers, opts) do
     {_, ws_key} = Enum.find(headers, &(elem(&1, 0) == "sec-websocket-key"))
     ws_ext = extract_websocket_extensions(headers)
 
@@ -89,7 +89,7 @@ defmodule Stargate.Vessel.Websocket do
     end)
   end
 
-  def compress(config, opts) do
+  def compress_handshake(config, opts) do
     inflate_zlib = :zlib.open()
     :zlib.inflateInit(inflate_zlib, -15)
 
