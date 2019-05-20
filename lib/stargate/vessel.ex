@@ -205,8 +205,7 @@ defmodule Stargate.Vessel do
         Map.get(config_hosts, {:ws, {host, path}}, default_handler_path)
 
       _ ->
-        # TODO: Create Error Module for this
-        raise "InvalidHandlerTypeError"
+        raise Errors.InvalidHandlerTypeError, type
     end
   end
 end
