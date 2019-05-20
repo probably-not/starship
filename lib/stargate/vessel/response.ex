@@ -1,9 +1,12 @@
 defmodule Stargate.Vessel.Response do
-  @moduledoc false
+  @moduledoc """
+  Functions for building responses that are returned to the client.
+  """
 
   alias __MODULE__
   import Response.Codes, only: [response: 1]
 
+  @spec build_response(non_neg_integer, [{binary, binary}], bitstring) :: binary
   def build_response(code, headers, body) do
     headers =
       case Enum.find(headers, &(elem(&1, 0) == "Connection")) do

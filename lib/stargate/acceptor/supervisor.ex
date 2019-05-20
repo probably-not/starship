@@ -1,13 +1,18 @@
 defmodule Stargate.Acceptor.Supervisor do
-  @moduledoc false
+  @moduledoc """
+  The TCP Acceptor supervisor, which spawns and supervises `Stargate.Acceptor`
+  processes to handle the requests to the `Stargate` Webserver.
+  """
 
   require Logger
 
+  @spec loop(config :: map) :: no_return
   def loop(config) do
     Process.flag(:trap_exit, true)
     loop_1(config)
   end
 
+  @spec loop_1(config :: map) :: no_return
   def loop_1(config) do
     acceptors = Map.get(config, :acceptors, [])
     to_spawn = :erlang.system_info(:schedulers) - length(acceptors)

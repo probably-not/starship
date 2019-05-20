@@ -1,8 +1,19 @@
 defmodule Stargate.Acceptor do
-  @moduledoc false
+  @moduledoc """
+  The TCP Acceptor used by the `Stargate` Webserver.
+
+  A `Stargate.Acceptor` is started by the `Stargate.Acceptor.Supervisor` per open socket.
+  """
 
   require Logger
 
+  @doc """
+  The main event loop for the `Stargate.Acceptor` process.
+
+  This loop listens for messages and spawns a `Stargate.Vessel`
+  process per request that arrives on the socket.
+  """
+  @spec loop(config :: map) :: no_return
   def loop(config) do
     {:ok, _} = :prim_inet.async_accept(config.listen_socket, -1)
 

@@ -1,7 +1,12 @@
 defmodule Stargate.Handler.Wildcard.Http.Redirect do
-  @moduledoc false
+  @moduledoc """
+  A simple wildcard handler for redirecting HTTP requests from non-secured to secured endpoints.
+  """
 
-  def http(conn, config) do
+  alias Stargate.Vessel.Conn
+
+  @spec http(Conn.t(), map) :: {non_neg_integer, [{binary, binary}], binary, map}
+  def http(%Conn{} = conn, config) do
     {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
 
     query = Enum.reduce(conn.query, "", fn {k, v}, a -> "#{a}&#{k}=#{v}" end)

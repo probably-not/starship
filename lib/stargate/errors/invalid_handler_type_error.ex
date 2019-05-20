@@ -1,7 +1,7 @@
 defmodule Stargate.Errors.InvalidHandlerTypeError do
   @moduledoc """
   The error that is raised when an invalid
-  configuration is passed to `Stargate.warp_in/1`.
+  handler type is passed to `Stargate.Vessel.get_host_handler/4`.
   """
   defexception [:message]
 
@@ -12,7 +12,7 @@ defmodule Stargate.Errors.InvalidHandlerTypeError do
     The request was made using the #{handler_type} handler type,
     which is currently unsupported by the Stargate Webserver.
 
-    The current supported handler types are Websocket (ws) and HTTP.
+    The current supported handler types are Websocket and HTTP.
     """
 
     %__MODULE__{message: message}

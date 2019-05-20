@@ -1,5 +1,9 @@
 defmodule Stargate.Vessel.Response.Codes do
-  @moduledoc false
+  @moduledoc """
+  All Response Codes that the `Stargate` Webserver can currently return.
+  """
+
+  @spec response(non_neg_integer) :: bitstring
 
   # 1×× Informational
   def response(100), do: "Continue"

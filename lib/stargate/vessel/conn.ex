@@ -1,5 +1,7 @@
 defmodule Stargate.Vessel.Conn do
-  @moduledoc false
+  @moduledoc """
+  The connection struct for the `Stargate` Webserver.
+  """
 
   @type body :: binary
   @type headers :: [{binary, binary}]

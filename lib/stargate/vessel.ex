@@ -1,5 +1,10 @@
 defmodule Stargate.Vessel do
-  @moduledoc false
+  @moduledoc """
+  The main request handler for the `Stargate` Webserver.
+
+  When a message is passed to a `Stargate.Acceptor` process,
+  a `Stargate.Vessel` process is spawned to handle the request.
+  """
 
   alias __MODULE__
   alias Stargate.Errors
@@ -9,6 +14,8 @@ defmodule Stargate.Vessel do
   import Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
 
   @max_header_size 8192
+  @vessel_timeout 120_000
+  @ssl_handshake_timeout 120_000
 
   @spec loop(config :: map) :: map | true
   def loop(config) do
@@ -17,7 +24,7 @@ defmodule Stargate.Vessel do
         {:pass_socket, csocket} ->
           {transport, socket} =
             if config[:ssl_opts] do
-              {:ok, ssl_socket} = :ssl.handshake(csocket, config.ssl_opts, 120_000)
+              {:ok, ssl_socket} = :ssl.handshake(csocket, config.ssl_opts, @ssl_handshake_timeout)
               {:ssl, ssl_socket}
             else
               :ok = :inet.setopts(csocket, [{:active, true}])
@@ -47,7 +54,7 @@ defmodule Stargate.Vessel do
         {:ws_send, tuple} ->
           on_ws_send(tuple, config)
       after
-        120_000 ->
+        @vessel_timeout ->
           :close
       end
 

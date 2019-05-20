@@ -1,5 +1,7 @@
 defmodule Stargate.Vessel.Config do
-  @moduledoc false
+  @moduledoc """
+  The configuration struct for the `Stargate` Webserver.
+  """
 
   @type t :: %__MODULE__{
           buf: binary,

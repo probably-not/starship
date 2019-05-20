@@ -1,12 +1,16 @@
 defmodule Stargate.Vessel.Websocket do
-  @moduledoc false
+  @moduledoc """
+  Functions for handling Websocket Requests in `Stargate.Vessel`.
+  """
 
-  alias Stargate.Vessel
   alias __MODULE__
+  alias Stargate.Vessel
+  alias Stargate.Vessel.Conn
   import Vessel.Response, only: [build_response: 3]
 
   @ws_guid "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
+  @spec handle_ws_frame(binary, map) :: :ok
   def handle_ws_frame(frame, config) do
     frame = Map.get(config, :buf, <<>>) <> frame
 
@@ -14,9 +18,12 @@ defmodule Stargate.Vessel.Websocket do
       {:ok, :final, :masked, :close, _final_payload} -> config.transport.close(config.socket)
       {:ok, :final, :masked, :text, text} -> config.handler.handle_text_frame(text, config)
     end
+
+    :ok
   end
 
-  def handle_ws_handshake(conn, config) do
+  @spec handle_ws_handshake(Conn.t(), map) :: map
+  def handle_ws_handshake(%Conn{} = conn, config) do
     {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
     {ws_handler, opts} = Vessel.get_host_handler(:ws, host, conn.path, config.hosts)
     config = Map.put(config, :handler, ws_handler)
@@ -27,12 +34,14 @@ defmodule Stargate.Vessel.Websocket do
     end
   end
 
+  @spec rejected_handshake(map) :: map
   def rejected_handshake(config) do
     response_bin = build_response(404, [{"Connection", "close"}], "")
     :ok = config.transport.send(config.socket, response_bin)
     config
   end
 
+  @spec successful_handshake(Conn.t(), map, map) :: map
   def successful_handshake(conn, config, opts) do
     {headers, should_compress} = build_handshake_reply_headers(conn.headers, opts)
 
@@ -51,6 +60,7 @@ defmodule Stargate.Vessel.Websocket do
     config
   end
 
+  @spec build_handshake_reply_headers([{binary, binary}], map) :: {[{binary, binary}], boolean}
   def build_handshake_reply_headers(headers, opts) do
     {_, ws_key} = Enum.find(headers, &(elem(&1, 0) == "sec-websocket-key"))
     ws_ext = extract_websocket_extensions(headers)
@@ -74,6 +84,7 @@ defmodule Stargate.Vessel.Websocket do
     {reply_headers, length(extra_headers) > 0}
   end
 
+  @spec extract_websocket_extensions([{binary, binary}]) :: map
   def extract_websocket_extensions(headers) do
     {_, ws_ext} = Enum.find(headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
 
@@ -89,6 +100,7 @@ defmodule Stargate.Vessel.Websocket do
     end)
   end
 
+  @spec compress_handshake(map, map) :: map
   def compress_handshake(config, opts) do
     inflate_zlib = :zlib.open()
     :zlib.inflateInit(inflate_zlib, -15)
