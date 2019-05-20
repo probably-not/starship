@@ -5,9 +5,9 @@ defmodule Stargate.Vessel.Config do
           buf: binary,
           hosts: map,
           ip: tuple,
-          listen_socket: Port.t(),
+          listen_socket: port(),
           port: non_neg_integer,
-          socket: Port.t(),
+          socket: port(),
           transport: atom,
           handler: module,
           state: :ws | :http_body | nil

@@ -22,7 +22,7 @@ defmodule Stargate.Mixfile do
       ],
       # The main page in the docs
       docs: [main: "Stargate", extras: ["README.md"]],
-      dialyzer: [plt_add_deps: :project]
+      dialyzer: [plt_add_deps: :transitive]
     ]
   end
 
@@ -33,7 +33,7 @@ defmodule Stargate.Mixfile do
   end
 
   defp applications(:dev), do: applications(:all) ++ [:remixed_remix]
-  defp applications(_all), do: [:logger, :runtime_tools]
+  defp applications(_all), do: [:ssl, :logger, :runtime_tools]
 
   def deps do
     [

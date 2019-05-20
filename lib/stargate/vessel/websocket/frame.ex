@@ -126,7 +126,7 @@ defmodule Stargate.Vessel.Websocket.Frame do
     masked_payload = translate_payload(masking_key <> <<payload::binary>>)
 
     <<@final::bits, 0::size(3), opcode::bits, @mask::bits, byte_size(payload)::size(7),
-      masking_key::binary, masked_payload>>
+      masking_key::binary, masked_payload::binary>>
   end
 
   def make_secret(nonce) do

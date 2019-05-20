@@ -6,7 +6,7 @@ defmodule Stargate.Errors.UnsupportedHttpVersionError do
   defexception [:message]
 
   @impl true
-  @spec exception(http_version :: binary) :: map
+  @spec exception(http_version :: binary | atom) :: Exception.t()
   def exception(http_version) do
     message = """
     The request was made using #{http_version},

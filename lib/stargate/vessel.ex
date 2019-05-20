@@ -10,6 +10,7 @@ defmodule Stargate.Vessel do
 
   @max_header_size 8192
 
+  @spec loop(config :: map) :: map | true
   def loop(config) do
     config =
       receive do
@@ -53,16 +54,18 @@ defmodule Stargate.Vessel do
     loop(config)
   end
 
+  @spec on_close(config :: map) :: true
   def on_close(config) do
     config.transport.close(config.socket)
     Process.exit(self(), :normal)
   end
 
+  @spec on_ws_send(_tuple :: tuple, config :: map) :: map
   def on_ws_send(_tuple, config) do
     config
   end
 
-  def on_tcp(config = %{state: :ws}, bin) do
+  def on_tcp(%{state: :ws} = config, bin) do
     handle_ws_frame(bin, config)
     config
   end
@@ -81,6 +84,7 @@ defmodule Stargate.Vessel do
     end
   end
 
+  @spec on_tcp(config :: map, bin :: binary) :: map | true
   def on_tcp(config, bin) do
     buf = Map.get(config, :buf, <<>>) <> bin
     end_of_header = :binary.match(buf, "\r\n\r\n")
@@ -92,12 +96,14 @@ defmodule Stargate.Vessel do
     end
   end
 
+  @spec close_connection(config :: map) :: true
   def close_connection(config) do
     response_bin = build_response(413, [{"Connection", "close"}], "")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)
   end
 
+  @spec handle_request({non_neg_integer, non_neg_integer}, buf :: binary, config :: map) :: map
   def handle_request({end_of_headers, _}, buf, config) do
     {conn, buf} = build_conn(end_of_headers, buf)
 
@@ -132,6 +138,7 @@ defmodule Stargate.Vessel do
     end
   end
 
+  @spec build_conn(end_of_headers :: non_neg_integer, buf :: binary) :: {Vessel.Conn.t(), binary}
   def build_conn(end_of_headers, buf) do
     <<header_bin::binary-size(end_of_headers), _::32, buf::binary>> = buf
     [req | headers] = String.split(header_bin, "\r\n")
@@ -163,7 +170,9 @@ defmodule Stargate.Vessel do
       try do
         String.to_existing_atom(method)
       rescue
-        ArgumentError -> reraise Errors.UnsupportedHttpMethodError, method
+        ArgumentError ->
+          stacktrace = System.stacktrace()
+          reraise Errors.UnsupportedHttpMethodError, method, stacktrace
       end
 
     http_version =
@@ -176,7 +185,9 @@ defmodule Stargate.Vessel do
           raise Errors.UnsupportedHttpVersionError, v
         end
       rescue
-        ArgumentError -> reraise Errors.UnsupportedHttpVersionError, http_version
+        ArgumentError ->
+          stacktrace = System.stacktrace()
+          reraise Errors.UnsupportedHttpVersionError, http_version, stacktrace
       end
 
     {%Vessel.Conn{
@@ -189,10 +200,12 @@ defmodule Stargate.Vessel do
      }, buf}
   end
 
+  @spec websocket?(headers :: [{binary, binary}]) :: boolean
   def websocket?(headers) do
     Enum.find(headers, fn {k, v} -> k == "upgrade" and v == "websocket" end) != nil
   end
 
+  @spec get_host_handler(atom, binary, binary, map) :: {module, map}
   def get_host_handler(type, host, path, config_hosts) do
     default_handler = Map.get(config_hosts, {type, "*"})
 

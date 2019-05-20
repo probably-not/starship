@@ -16,7 +16,8 @@ defmodule Stargate do
     hosts: %{
       {:http, "*"} => {Stargate.Handler.Wildcard.Http, %{}},
       {:ws, "*"} => {Stargate.Handler.Wildcard.Websocket, %{}}
-    }
+    },
+    ssl_opts: nil
   }
 
   @doc """
@@ -100,22 +101,15 @@ defmodule Stargate do
   end
 
   @spec validate_config!(config :: map) :: map
-  defp validate_config!(%{ip: ip, port: port, hosts: hosts} = config)
-       when is_tuple(ip) and is_integer(port) and is_map(hosts) do
+  def validate_config!(config) when is_map(config) do
     config
-    |> Map.put_new(:hosts, Map.merge(@default_configuration.hosts, hosts))
-    |> Map.put_new(:ssl_opts, nil)
+    |> Map.put_new(:ip, @default_configuration.ip)
+    |> Map.put_new(:port, @default_configuration.port)
+    |> Map.put(:hosts, Map.merge(@default_configuration.hosts, config.hosts))
+    |> Map.put_new(:ssl_opts, @default_configuration.port)
   end
 
-  @spec validate_config!(config :: map) :: map
-  defp validate_config!(%{ip: ip, port: port} = config)
-       when is_tuple(ip) and is_integer(port) do
-    config
-    |> Map.put(:hosts, @default_configuration.hosts)
-    |> Map.put_new(:ssl_opts, nil)
-  end
-
-  defp validate_config!(config) do
+  def validate_config!(config) do
     raise Errors.InvalidConfigurationError,
       provided_config: config,
       default_config: @default_configuration
