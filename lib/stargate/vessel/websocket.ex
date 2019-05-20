@@ -34,8 +34,26 @@ defmodule Stargate.Vessel.Websocket do
   end
 
   def successful_handshake(conn, config, opts) do
-    {_, ws_key} = Enum.find(conn.headers, &(elem(&1, 0) == "sec-websocket-key"))
-    ws_ext = extract_websocket_extensions(conn.headers)
+    {headers, should_compress} = build_reply_headers(conn.headers, opts)
+
+    config =
+      if should_compress do
+        compress(config, opts)
+      else
+        config
+      end
+
+    handshake_response =
+      <<"HTTP/1.1 101 Switching Protocols\r\n"::binary,
+        Enum.reduce(headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)::binary, "\r\n">>
+
+    :ok = config.transport.send(config.socket, handshake_response)
+    config
+  end
+
+  def build_reply_headers(headers, opts) do
+    {_, ws_key} = Enum.find(headers, &(elem(&1, 0) == "sec-websocket-key"))
+    ws_ext = extract_websocket_extensions(headers)
 
     extra_headers =
       if opts[:compress] != nil and ws_ext["permessage-deflate"] != nil do
@@ -53,32 +71,7 @@ defmodule Stargate.Vessel.Websocket do
         {"Sec-WebSocket-Accept", :base64.encode(:crypto.hash(:sha, <<ws_key::binary, @ws_guid>>))}
       ] ++ extra_headers ++ inject_headers
 
-    config =
-      if length(extra_headers) > 0 do
-        inflate_zlib = :zlib.open()
-        :zlib.inflateInit(inflate_zlib, -15)
-
-        compress = Map.get(opts, :compress, %{})
-        level = Map.get(compress, :level, 1)
-        mem_level = Map.get(compress, :mem_level, 8)
-        window_bits = Map.get(compress, :window_bits, 15)
-        strategy = Map.get(compress, :strategy, :default)
-
-        deflate_zlib = :zlib.open()
-        :zlib.deflateInit(deflate_zlib, level, :deflated, -window_bits, mem_level, strategy)
-
-        Map.merge(config, %{inflate: inflate_zlib, deflate: deflate_zlib})
-      else
-        config
-      end
-
-    handshake_response =
-      <<"HTTP/1.1 101 Switching Protocols\r\n"::binary,
-        Enum.reduce(reply_headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)::binary,
-        "\r\n">>
-
-    :ok = config.transport.send(config.socket, handshake_response)
-    config
+    {reply_headers, length(extra_headers) > 0}
   end
 
   def extract_websocket_extensions(headers) do
@@ -94,5 +87,21 @@ defmodule Stargate.Vessel.Websocket do
         _ -> acc
       end
     end)
+  end
+
+  def compress(config, opts) do
+    inflate_zlib = :zlib.open()
+    :zlib.inflateInit(inflate_zlib, -15)
+
+    compress = Map.get(opts, :compress, %{})
+    level = Map.get(compress, :level, 1)
+    mem_level = Map.get(compress, :mem_level, 8)
+    window_bits = Map.get(compress, :window_bits, 15)
+    strategy = Map.get(compress, :strategy, :default)
+
+    deflate_zlib = :zlib.open()
+    :zlib.deflateInit(deflate_zlib, level, :deflated, -window_bits, mem_level, strategy)
+
+    Map.merge(config, %{inflate: inflate_zlib, deflate: deflate_zlib})
   end
 end
