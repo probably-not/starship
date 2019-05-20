@@ -2,6 +2,8 @@ defmodule Stargate.Vessel do
   @moduledoc false
 
   alias __MODULE__
+  alias Stargate.Errors
+
   import Vessel.Response, only: [build_response: 3]
   import Vessel.Http, only: [handle_http_request: 2]
   import Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
@@ -96,11 +98,44 @@ defmodule Stargate.Vessel do
     Process.exit(self(), :normal)
   end
 
-  def handle_request(end_of_header, buf, config) do
-    {pos, _} = end_of_header
-    <<header_bin::binary-size(pos), _::32, buf::binary>> = buf
+  def handle_request({end_of_headers, _}, buf, config) do
+    {conn, buf} = build_conn(end_of_headers, buf)
+
+    cond do
+      websocket?(conn.headers) ->
+        config = handle_ws_handshake(conn, config)
+        Map.merge(config, %{buf: buf, state: :ws})
+
+      conn.method == :POST or conn.method == :PUT ->
+        # add parsing more content types
+        {"content-length", clen} = Enum.find(conn.headers, fn {k, _} -> k == "content-length" end)
+        clen = :erlang.binary_to_integer(clen)
+
+        case buf do
+          <<body::binary-size(clen), buf::binary>> ->
+            conn = Map.put(conn, :body, body)
+            config = handle_http_request(conn, config)
+            Map.merge(config, %{buf: buf, request: %{}, state: nil})
+
+          buf ->
+            Map.merge(config, %{
+              buf: buf,
+              request: conn,
+              state: :http_body,
+              body_size: clen
+            })
+        end
+
+      true ->
+        config = handle_http_request(conn, config)
+        Map.merge(config, %{buf: buf, request: %{}, state: nil})
+    end
+  end
+
+  def build_conn(end_of_headers, buf) do
+    <<header_bin::binary-size(end_of_headers), _::32, buf::binary>> = buf
     [req | headers] = String.split(header_bin, "\r\n")
-    [type, path, http_ver] = String.split(req, " ")
+    [method, path, http_version] = String.split(req, " ")
 
     headers =
       Enum.map(headers, fn line ->
@@ -124,46 +159,38 @@ defmodule Stargate.Vessel do
           {path, %{}}
       end
 
-    request = %{
-      type: type,
-      path: path,
-      query: query,
-      http_ver: http_ver,
-      headers: headers,
-      body: ""
-    }
+    method =
+      try do
+        String.to_existing_atom(method)
+      rescue
+        ArgumentError -> raise Errors.UnsupportedHttpMethodError, method
+      end
 
-    websocket? = Enum.find(headers, fn {k, v} -> k == "upgrade" and v == "websocket" end)
+    http_version =
+      try do
+        v = String.to_existing_atom(http_version)
 
-    cond do
-      websocket? != nil ->
-        config = handle_ws_handshake(request, config)
-        Map.merge(config, %{buf: buf, state: :ws})
-
-      type == "POST" or type == "PUT" ->
-        # add parsing more content types
-        {"content-length", clen} = Enum.find(headers, fn {k, _} -> k == "content-length" end)
-        clen = :erlang.binary_to_integer(clen)
-
-        case buf do
-          <<body::binary-size(clen), buf::binary>> ->
-            request = Map.put(request, :body, body)
-            config = handle_http_request(request, config)
-            Map.merge(config, %{buf: buf, request: %{}, state: nil})
-
-          buf ->
-            Map.merge(config, %{
-              buf: buf,
-              request: request,
-              state: :http_body,
-              body_size: clen
-            })
+        if v == :"HTTP/1.1" do
+          v
+        else
+          raise Errors.UnsupportedHttpVersionError, v
         end
+      rescue
+        ArgumentError -> raise Errors.UnsupportedHttpVersionError, http_version
+      end
 
-      true ->
-        config = handle_http_request(request, config)
-        Map.merge(config, %{buf: buf, request: %{}, state: nil})
-    end
+    {%Vessel.Conn{
+       method: method,
+       path: path,
+       query: query,
+       http_version: http_version,
+       headers: headers,
+       body: ""
+     }, buf}
+  end
+
+  def websocket?(headers) do
+    Enum.find(headers, fn {k, v} -> k == "upgrade" and v == "websocket" end) != nil
   end
 
   def get_host_handler(type, host, path, config_hosts) do

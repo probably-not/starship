@@ -5,6 +5,8 @@ defmodule Stargate do
   This module is the starting point for the Stargate Webserver.
   """
 
+  alias Stargate.Errors
+
   @default_configuration %{
     ip: {0, 0, 0, 0},
     port: 4000,
@@ -13,29 +15,6 @@ defmodule Stargate do
       {:ws, "*"} => {Stargate.Handler.Wildcard.Websocket, %{}}
     }
   }
-
-  defmodule InvalidConfigurationError do
-    @moduledoc """
-    The error that is raised when an invalid
-    configuration is passed to `Stargate.warp_in/1`.
-    """
-    defexception [:message]
-
-    @impl true
-    def exception(attrs) do
-      message = """
-      Your configuration is invalid.
-      Please see the default configuration
-      and make sure that your configuration
-      contains all of the necessary values.
-
-      Provided Configuration: #{inspect(attrs[:provided_config])}
-      Default Configuration: #{inspect(attrs[:default_config])}
-      """
-
-      %InvalidConfigurationError{message: message}
-    end
-  end
 
   @doc """
   Starts the Stargate webserver with the default configuration.
@@ -130,7 +109,7 @@ defmodule Stargate do
   end
 
   defp validate_config!(config) do
-    raise InvalidConfigurationError,
+    raise Errors.InvalidConfigurationError,
       provided_config: config,
       default_config: @default_configuration
   end

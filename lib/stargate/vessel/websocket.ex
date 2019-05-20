@@ -14,22 +14,22 @@ defmodule Stargate.Vessel.Websocket do
     end
   end
 
-  def handle_ws_handshake(request, config) do
-    {_, host} = Enum.find(request.headers, &(elem(&1, 0) == "host"))
-    {ws_handler, opts} = Vessel.get_host_handler(:ws, host, request.path, config.hosts)
+  def handle_ws_handshake(conn, config) do
+    {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
+    {ws_handler, opts} = Vessel.get_host_handler(:ws, host, conn.path, config.hosts)
     config = Map.put(config, :handler, ws_handler)
 
-    case :erlang.apply(ws_handler, :connect, [request, config]) do
+    case :erlang.apply(ws_handler, :connect, [conn, config]) do
       :reject ->
         response_bin = build_response(404, [{"Connection", "close"}], "")
         :ok = config.transport.send(config.socket, response_bin)
         config
 
       {:ok, config} ->
-        {_, ws_key} = Enum.find(request.headers, &(elem(&1, 0) == "sec-websocket-key"))
+        {_, ws_key} = Enum.find(conn.headers, &(elem(&1, 0) == "sec-websocket-key"))
 
         {_, ws_ext} =
-          Enum.find(request.headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
+          Enum.find(conn.headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
 
         ws_ext = String.replace(ws_ext, " ", "")
         ws_ext = String.split(ws_ext, ",", trim: true)

@@ -1,7 +1,7 @@
 defmodule Stargate.Handler.Wildcard.Http do
-  def http(conn, config) do
-    IO.inspect(conn)
-    IO.inspect(config)
+  alias Stargate.Vessel.Conn
+
+  def http(%Conn{} = _conn, config) do
     {200, [], "", config}
   end
 end

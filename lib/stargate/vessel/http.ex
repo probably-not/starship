@@ -4,10 +4,10 @@ defmodule Stargate.Vessel.Http do
   alias Stargate.Vessel
   import Vessel.Response, only: [build_response: 3]
 
-  def handle_http_request(request, config) do
-    {_, host} = Enum.find(request.headers, &(elem(&1, 0) == "host"))
-    {http_handler, _} = Vessel.get_host_handler(:http, host, request.path, config.hosts)
-    {code, headers, body, config} = :erlang.apply(http_handler, :http, [request, config])
+  def handle_http_request(conn, config) do
+    {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
+    {http_handler, _} = Vessel.get_host_handler(:http, host, conn.path, config.hosts)
+    {code, headers, body, config} = :erlang.apply(http_handler, :http, [conn, config])
 
     response_bin = build_response(code, headers, body)
 
