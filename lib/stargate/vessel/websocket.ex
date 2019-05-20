@@ -9,7 +9,7 @@ defmodule Stargate.Vessel.Websocket do
     frame = Map.get(config, :buf, <<>>) <> frame
 
     case Websocket.Frame.parse_frame(frame) do
-      {:ok, :final, :masked, :close, ""} -> config.transport.close(config.socket)
+      {:ok, :final, :masked, :close, _final_payload} -> config.transport.close(config.socket)
       {:ok, :final, :masked, :text, text} -> config.handler.handle_text_frame(text, config)
     end
   end
