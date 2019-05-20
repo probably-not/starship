@@ -101,7 +101,7 @@ defmodule Stargate do
   end
 
   @doc """
-  Validates the configuration and adds any missing information.
+  Validates the configuration and adds any of the missing required information.
 
     ## Examples
       iex(1)> config = %{}
