@@ -5,6 +5,8 @@ defmodule Stargate.Vessel.Websocket do
   alias __MODULE__
   import Vessel.Response, only: [build_response: 3]
 
+  @ws_guid "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+
   def handle_ws_frame(frame, config) do
     frame = Map.get(config, :buf, <<>>) <> frame
 
@@ -33,20 +35,7 @@ defmodule Stargate.Vessel.Websocket do
 
   def successful_handshake(conn, config, opts) do
     {_, ws_key} = Enum.find(conn.headers, &(elem(&1, 0) == "sec-websocket-key"))
-
-    {_, ws_ext} = Enum.find(conn.headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
-
-    ws_ext = String.replace(ws_ext, " ", "")
-    ws_ext = String.split(ws_ext, ",", trim: true)
-
-    ws_ext =
-      Enum.reduce(ws_ext, %{}, fn ext, acc ->
-        case String.split(ext, ";", trim: true) do
-          [h | [] = _t] -> Map.put(acc, h, "")
-          [h | t] -> Map.put(acc, h, t)
-          _ -> acc
-        end
-      end)
+    ws_ext = extract_websocket_extensions(conn.headers)
 
     extra_headers =
       if opts[:compress] != nil and ws_ext["permessage-deflate"] != nil do
@@ -61,10 +50,7 @@ defmodule Stargate.Vessel.Websocket do
       [
         {"Upgrade", "websocket"},
         {"Connection", "Upgrade"},
-        {"Sec-WebSocket-Accept",
-         :base64.encode(
-           :crypto.hash(:sha, <<ws_key::binary, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11">>)
-         )}
+        {"Sec-WebSocket-Accept", :base64.encode(:crypto.hash(:sha, <<ws_key::binary, @ws_guid>>))}
       ] ++ extra_headers ++ inject_headers
 
     config =
@@ -91,12 +77,22 @@ defmodule Stargate.Vessel.Websocket do
         Enum.reduce(reply_headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)::binary,
         "\r\n">>
 
-    :ok =
-      config.transport.send(
-        config.socket,
-        handshake_response
-      )
-
+    :ok = config.transport.send(config.socket, handshake_response)
     config
+  end
+
+  def extract_websocket_extensions(headers) do
+    {_, ws_ext} = Enum.find(headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
+
+    ws_ext = String.replace(ws_ext, " ", "")
+    ws_ext = String.split(ws_ext, ",", trim: true)
+
+    Enum.reduce(ws_ext, %{}, fn ext, acc ->
+      case String.split(ext, ";", trim: true) do
+        [h | [] = _t] -> Map.put(acc, h, "")
+        [h | t] -> Map.put(acc, h, t)
+        _ -> acc
+      end
+    end)
   end
 end
