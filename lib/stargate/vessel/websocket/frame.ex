@@ -1,6 +1,7 @@
 defmodule Stargate.Vessel.Websocket.Frame do
   @moduledoc """
   A websocket frame helper.
+  TODO: Clean, understand, and fix.
 
   Frame Structure:
   0                   1                   2                   3
@@ -46,7 +47,6 @@ defmodule Stargate.Vessel.Websocket.Frame do
   @pong <<1::size(1), 0::size(1), 1::size(1), 0::size(1)>>
 
   def parse_frame(<<fin::bits-size(1), rsvs::bits-size(3), rest::bits>>) do
-    # TODO -- assert that
     <<0::size(3)>> = rsvs
 
     case fin do
@@ -93,7 +93,6 @@ defmodule Stargate.Vessel.Websocket.Frame do
   defp parse_opcode(@pong), do: :pong
 
   def translate_payload(<<masking_key::bits-size(32), payload::bits>>) do
-    # transformed-octet-i = original-octet-i XOR masking-key-octet-(i MOD 4)
     translate_payload(payload, masking_key, 0, "")
   end
 
@@ -114,26 +113,22 @@ defmodule Stargate.Vessel.Websocket.Frame do
   end
 
   def format_server_frame(payload, :text) do
-    # TODO accurate payload lengths...
     <<@final::bits, 0::size(3), @text::bits, @no_mask::bits, byte_size(payload)::size(7),
       payload::binary>>
   end
 
   def format_server_frame(payload, :close) do
-    # TODO accurate payload lengths...
     <<@final::bits, 0::size(3), @close::bits, @no_mask::bits, byte_size(payload)::size(7),
       payload::binary>>
   end
 
   def format_client_frame(masking_key, payload, opcode) do
-    # TODO accurate payload lengths...
     masked_payload = translate_payload(masking_key <> <<payload::binary>>)
 
     <<@final::bits, 0::size(3), opcode::bits, @mask::bits, byte_size(payload)::size(7),
       masking_key::binary, masked_payload>>
   end
 
-  # TODO move to new file
   def make_secret(nonce) do
     :crypto.hash(:sha, nonce <> @ws_guid)
     |> Base.encode64()

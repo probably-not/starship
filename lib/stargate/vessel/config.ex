@@ -1,4 +1,6 @@
 defmodule Stargate.Vessel.Config do
+  @moduledoc false
+
   @type t :: %__MODULE__{
           buf: binary,
           hosts: map,

@@ -44,12 +44,10 @@ defmodule Stargate.Vessel.Websocket do
           end)
 
         extra_headers =
-          cond do
-            opts[:compress] != nil and ws_ext["permessage-deflate"] != nil ->
-              [{"Sec-WebSocket-Extensions", "permessage-deflate"}]
-
-            true ->
-              []
+          if opts[:compress] != nil and ws_ext["permessage-deflate"] != nil do
+            [{"Sec-WebSocket-Extensions", "permessage-deflate"}]
+          else
+            []
           end
 
         inject_headers = Map.get(opts, :inject_headers, [])
@@ -71,12 +69,12 @@ defmodule Stargate.Vessel.Websocket do
 
             compress = Map.get(opts, :compress, %{})
             level = Map.get(compress, :level, 1)
-            memLevel = Map.get(compress, :mem_level, 8)
-            windowBits = Map.get(compress, :window_bits, 15)
+            mem_level = Map.get(compress, :mem_level, 8)
+            window_bits = Map.get(compress, :window_bits, 15)
             strategy = Map.get(compress, :strategy, :default)
 
             deflate_zlib = :zlib.open()
-            :zlib.deflateInit(deflate_zlib, level, :deflated, -windowBits, memLevel, strategy)
+            :zlib.deflateInit(deflate_zlib, level, :deflated, -window_bits, mem_level, strategy)
 
             Map.merge(config, %{inflate: inflate_zlib, deflate: deflate_zlib})
           else

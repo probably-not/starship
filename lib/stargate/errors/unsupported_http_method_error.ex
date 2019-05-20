@@ -6,6 +6,7 @@ defmodule Stargate.Errors.UnsupportedHttpMethodError do
   defexception [:message]
 
   @impl true
+  @spec exception(http_method :: binary) :: map
   def exception(http_method) do
     message = """
     The request was made using the #{http_method} HTTP Method,

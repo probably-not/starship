@@ -1,4 +1,6 @@
 defmodule Stargate.Vessel.Conn do
+  @moduledoc false
+
   @type body :: binary
   @type headers :: [{binary, binary}]
   @type http_version :: :"HTTP/0.9" | :"HTTP/1.0" | :"HTTP/1.1" | :"HTTP/2.0" | :"HTTP/3.0"

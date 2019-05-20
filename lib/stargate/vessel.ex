@@ -15,12 +15,12 @@ defmodule Stargate.Vessel do
       receive do
         {:pass_socket, csocket} ->
           {transport, socket} =
-            if !config[:ssl_opts] do
-              :ok = :inet.setopts(csocket, [{:active, true}])
-              {:gen_tcp, csocket}
-            else
+            if config[:ssl_opts] do
               {:ok, ssl_socket} = :ssl.handshake(csocket, config.ssl_opts, 120_000)
               {:ssl, ssl_socket}
+            else
+              :ok = :inet.setopts(csocket, [{:active, true}])
+              {:gen_tcp, csocket}
             end
 
           Map.merge(config, %{socket: socket, transport: transport})
@@ -163,7 +163,7 @@ defmodule Stargate.Vessel do
       try do
         String.to_existing_atom(method)
       rescue
-        ArgumentError -> raise Errors.UnsupportedHttpMethodError, method
+        ArgumentError -> reraise Errors.UnsupportedHttpMethodError, method
       end
 
     http_version =
@@ -176,7 +176,7 @@ defmodule Stargate.Vessel do
           raise Errors.UnsupportedHttpVersionError, v
         end
       rescue
-        ArgumentError -> raise Errors.UnsupportedHttpVersionError, http_version
+        ArgumentError -> reraise Errors.UnsupportedHttpVersionError, http_version
       end
 
     {%Vessel.Conn{
@@ -196,13 +196,17 @@ defmodule Stargate.Vessel do
   def get_host_handler(type, host, path, config_hosts) do
     default_handler = Map.get(config_hosts, {type, "*"})
 
-    cond do
-      type == :http ->
+    case type do
+      :http ->
         Map.get(config_hosts, {:http, host}, default_handler)
 
-      type == :ws ->
+      :ws ->
         default_handler_path = Map.get(config_hosts, {:ws, {"*", path}}, default_handler)
         Map.get(config_hosts, {:ws, {host, path}}, default_handler_path)
+
+      _ ->
+        # TODO: Create Error Module for this
+        raise "InvalidHandlerTypeError"
     end
   end
 end

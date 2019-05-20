@@ -1,9 +1,11 @@
 defmodule Stargate.Acceptor do
+  @moduledoc false
+
   def loop(config) do
     {:ok, _} = :prim_inet.async_accept(config.listen_socket, -1)
 
     receive do
-      {:inet_async, _ListenSocket, _, {:ok, csocket}} ->
+      {:inet_async, _listen_socket, _, {:ok, csocket}} ->
         pid = :erlang.spawn(Stargate.Vessel, :loop, [config])
 
         :inet_db.register_socket(csocket, :inet_tcp)
@@ -12,8 +14,9 @@ defmodule Stargate.Acceptor do
 
         loop(config)
 
-      {:inet_async, _, _, error} ->
-        IO.inspect({:inet_async_error, error})
+      {:inet_async, _, _, _error} ->
+        # TODO: Add log for inet async error
+        # IO.inspect({:inet_async_error, error})
         loop(config)
 
       ukn ->

@@ -1,4 +1,6 @@
 defmodule Stargate.Handler.Wildcard.Http.Redirect do
+  @moduledoc false
+
   def http(conn, config) do
     {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
 

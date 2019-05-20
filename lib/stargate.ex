@@ -3,6 +3,9 @@ defmodule Stargate do
   The Stargate Webserver.
 
   This module is the starting point for the Stargate Webserver.
+
+  If you are an end user of Stargate, this is the only thing that you need to worry about.
+  Here is where you will `warp_in` your configuration (or use the default configuration provided) and start the webserver.
   """
 
   alias Stargate.Errors
@@ -27,6 +30,7 @@ defmodule Stargate do
       iex> is_pid(pid)
       true
   """
+  @spec warp_in :: pid
   def warp_in, do: warp_in(@default_configuration)
 
   @doc ~S"""
@@ -60,6 +64,7 @@ defmodule Stargate do
       iex(3)> is_pid(pid)
       true
   """
+  @spec warp_in(config :: map) :: pid
   def warp_in(config) when is_map(config) do
     config = validate_config!(config)
 
@@ -94,6 +99,7 @@ defmodule Stargate do
     :erlang.spawn(Stargate.Acceptor.Supervisor, :loop, [config])
   end
 
+  @spec validate_config!(config :: map) :: map
   defp validate_config!(%{ip: ip, port: port, hosts: hosts} = config)
        when is_tuple(ip) and is_integer(port) and is_map(hosts) do
     config
@@ -101,6 +107,7 @@ defmodule Stargate do
     |> Map.put_new(:ssl_opts, nil)
   end
 
+  @spec validate_config!(config :: map) :: map
   defp validate_config!(%{ip: ip, port: port} = config)
        when is_tuple(ip) and is_integer(port) do
     config

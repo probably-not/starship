@@ -6,6 +6,7 @@ defmodule Stargate.Errors.InvalidConfigurationError do
   defexception [:message]
 
   @impl true
+  @spec exception(attrs :: Keyword.t()) :: map
   def exception(attrs) do
     message = """
     Your configuration is invalid.

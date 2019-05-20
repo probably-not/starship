@@ -8,8 +8,7 @@ defmodule Stargate.Handler.Wildcard.Websocket do
     {:ok, config}
   end
 
-  def handle_text_frame(text, config) do
-    IO.inspect({:payload, text})
+  def handle_text_frame(_text, config) do
     response = Frame.format_server_frame("Hi there", :text)
     config.transport.send(config.socket, response)
     config

@@ -1,4 +1,6 @@
 defmodule Stargate.Acceptor.Supervisor do
+  @moduledoc false
+
   def loop(config) do
     Process.flag(:trap_exit, true)
     loop_1(config)
@@ -21,8 +23,9 @@ defmodule Stargate.Acceptor.Supervisor do
     config = Map.put(config, :acceptors, acceptors)
 
     receive do
-      {:EXIT, pid, r} ->
-        IO.inspect({:stargate_acceptor_died, pid, r})
+      {:EXIT, _pid, _r} ->
+        # TODO: Add log for dying acceptor
+        # IO.inspect({:stargate_acceptor_died, pid, r})
         loop_1(config)
 
       ukn ->
