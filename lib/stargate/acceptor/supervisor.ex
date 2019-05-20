@@ -1,6 +1,8 @@
 defmodule Stargate.Acceptor.Supervisor do
   @moduledoc false
 
+  require Logger
+
   def loop(config) do
     Process.flag(:trap_exit, true)
     loop_1(config)
@@ -23,13 +25,12 @@ defmodule Stargate.Acceptor.Supervisor do
     config = Map.put(config, :acceptors, acceptors)
 
     receive do
-      {:EXIT, _pid, _r} ->
-        # TODO: Add log for dying acceptor
-        # IO.inspect({:stargate_acceptor_died, pid, r})
+      {:EXIT, pid, reason} ->
+        Logger.warn("Exit from Stargate.Acceptor #{inspect(pid)}, Reason: #{inspect(reason)}")
         loop_1(config)
 
-      ukn ->
-        throw({__MODULE__, :ukn_msg, ukn})
+      unknown ->
+        throw({__MODULE__, :unknown_message, unknown})
     end
   end
 end

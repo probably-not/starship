@@ -1,6 +1,8 @@
 defmodule Stargate.Acceptor do
   @moduledoc false
 
+  require Logger
+
   def loop(config) do
     {:ok, _} = :prim_inet.async_accept(config.listen_socket, -1)
 
@@ -14,13 +16,12 @@ defmodule Stargate.Acceptor do
 
         loop(config)
 
-      {:inet_async, _, _, _error} ->
-        # TODO: Add log for inet async error
-        # IO.inspect({:inet_async_error, error})
+      {:inet_async, _, _, error} ->
+        Logger.error("INET Async Error: #{inspect(error)}")
         loop(config)
 
-      ukn ->
-        throw({__MODULE__, :ukn_msg, ukn})
+      unknown ->
+        throw({__MODULE__, :unknown_message, unknown})
     end
   end
 end
