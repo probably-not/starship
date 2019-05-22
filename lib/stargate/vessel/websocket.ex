@@ -6,7 +6,7 @@ defmodule Stargate.Vessel.Websocket do
   alias __MODULE__
   alias Stargate.Vessel
   alias Stargate.Vessel.Conn
-  import Vessel.Response, only: [build_response: 3]
+  import Vessel.Response, only: [build_response: 4]
 
   @ws_guid "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
@@ -36,7 +36,7 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec rejected_handshake(map) :: map
   def rejected_handshake(config) do
-    response_bin = build_response(404, [{"Connection", "close"}], "")
+    response_bin = build_response(404, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     config
   end

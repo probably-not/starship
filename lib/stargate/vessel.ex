@@ -9,7 +9,7 @@ defmodule Stargate.Vessel do
   alias __MODULE__
   alias Stargate.Errors
 
-  import Vessel.Response, only: [build_response: 3]
+  import Vessel.Response, only: [build_response: 4]
   import Vessel.Http, only: [handle_http_request: 2]
   import Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
 
@@ -105,7 +105,7 @@ defmodule Stargate.Vessel do
 
   @spec close_connection(config :: map) :: true
   def close_connection(config) do
-    response_bin = build_response(413, [{"Connection", "close"}], "")
+    response_bin = build_response(413, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)
   end
@@ -173,35 +173,11 @@ defmodule Stargate.Vessel do
           {path, %{}}
       end
 
-    method =
-      try do
-        String.to_existing_atom(method)
-      rescue
-        ArgumentError ->
-          stacktrace = System.stacktrace()
-          reraise Errors.UnsupportedHttpMethodError, method, stacktrace
-      end
-
-    http_version =
-      try do
-        v = String.to_existing_atom(http_version)
-
-        if v == :"HTTP/1.1" do
-          v
-        else
-          raise Errors.UnsupportedHttpVersionError, v
-        end
-      rescue
-        ArgumentError ->
-          stacktrace = System.stacktrace()
-          reraise Errors.UnsupportedHttpVersionError, http_version, stacktrace
-      end
-
     {%Vessel.Conn{
-       method: method,
+       method: Vessel.Conn.http_method!(method),
        path: path,
        query: query,
-       http_version: http_version,
+       http_version: Vessel.Conn.http_version!(http_version),
        headers: headers,
        body: ""
      }, buf}
