@@ -25,3 +25,7 @@ I've fully rewritten the Elixir branch of **@van163**'s work, cleaning it up, ad
   - As of now, the `Stargate.Vessel.Websocket.Frame` class is very rudimentary, I was able to somewhat figure it out with help from another project, but I still need to write out the full correct way of parsing frames in order to make the server fully websocket compliant.
 - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
   - Alternatively, write an adapter for Plug
+
+## Credits
+
+The main credit here goes to [**@van163**](https://github.com/vans163) for being frustrated with Elixir's standings in various benchmarks. After seeing his comments about this and his initial work, I decided to undertake this as a project in order to learn more about how web servers work and Elixir as a whole.
