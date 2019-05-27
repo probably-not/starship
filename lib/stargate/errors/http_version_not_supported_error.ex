@@ -1,4 +1,4 @@
-defmodule Stargate.Errors.UnsupportedHttpVersionError do
+defmodule Stargate.Errors.HttpVersionNotSupportedError do
   @moduledoc """
   The error that is raised when an unsupported HTTP Version is used in a request
   to the `Stargate` Webserver.

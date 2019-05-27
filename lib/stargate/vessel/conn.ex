@@ -54,7 +54,7 @@ defmodule Stargate.Vessel.Conn do
   rescue
     KeyError ->
       stacktrace = System.stacktrace()
-      reraise Errors.UnsupportedHttpVersionError, version, stacktrace
+      reraise Errors.HttpVersionNotSupportedError, version, stacktrace
   end
 
   @spec validate_http_version!(http_version) :: http_version | no_return
@@ -62,14 +62,16 @@ defmodule Stargate.Vessel.Conn do
     if valid_http_version?(version) do
       version
     else
-      raise Errors.UnsupportedHttpVersionError, version
+      raise Errors.HttpVersionNotSupportedError, version
     end
   end
 
   @spec valid_http_version?(http_version) :: boolean
   defp valid_http_version?(:"HTTP/1.1"), do: true
-  defp valid_http_version?(:"HTTP/1.0"), do: true
-  defp valid_http_version?(:"HTTP/0.9"), do: true
+  # defp valid_http_version?(:"HTTP/1.0"), do: true
+  # defp valid_http_version?(:"HTTP/0.9"), do: true
+  # defp valid_http_version?(:"HTTP/2.0"), do: true
+  # defp valid_http_version?(:"HTTP/3.0"), do: true
   defp valid_http_version?(_), do: false
 
   @spec http_method!(binary) :: method | no_return

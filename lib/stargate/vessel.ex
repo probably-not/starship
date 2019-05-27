@@ -110,6 +110,20 @@ defmodule Stargate.Vessel do
     Process.exit(self(), :normal)
   end
 
+  @spec method_not_allowed(config :: map) :: true
+  def method_not_allowed(config) do
+    response_bin = build_response(405, [{"Connection", "close"}], "", :"HTTP/1.1")
+    :ok = config.transport.send(config.socket, response_bin)
+    Process.exit(self(), :normal)
+  end
+
+  @spec http_version_not_supported(config :: map) :: true
+  def http_version_not_supported(config) do
+    response_bin = build_response(505, [{"Connection", "close"}], "", :"HTTP/1.1")
+    :ok = config.transport.send(config.socket, response_bin)
+    Process.exit(self(), :normal)
+  end
+
   @spec handle_request({non_neg_integer, non_neg_integer}, buf :: binary, config :: map) :: map
   def handle_request({end_of_headers, _}, buf, config) do
     {conn, buf} = build_conn(end_of_headers, buf)
@@ -143,6 +157,9 @@ defmodule Stargate.Vessel do
         config = handle_http_request(conn, config)
         Map.merge(config, %{buf: buf, request: %{}, state: nil})
     end
+  rescue
+    Errors.MethodNotAllowedError -> method_not_allowed(config)
+    Errors.HttpVersionNotSupportedError -> http_version_not_supported(config)
   end
 
   @spec build_conn(end_of_headers :: non_neg_integer, buf :: binary) :: {Vessel.Conn.t(), binary}
