@@ -4,24 +4,44 @@ defmodule Stargate.Vessel.Response do
   """
 
   alias __MODULE__
+  alias Stargate.Vessel.Conn
   import Response.Codes, only: [response: 1]
 
-  @spec build_response(non_neg_integer, [{binary, binary}], bitstring, atom) :: binary
-  def build_response(code, request_headers, body, http_version) do
-    headers = build_headers(request_headers, byte_size(body))
+  @spec build_response(non_neg_integer, Conn.headers(), Conn.body(), Conn.http_version()) ::
+          binary
+  def build_response(code, response_headers, body, http_version) do
+    headers = build_headers(response_headers, byte_size(body))
     response_head = <<"#{http_version} #{code} #{response(code)}\r\n"::binary>>
-    response_headers = Enum.reduce(headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)
-    <<response_head::binary, response_headers::binary, "\r\n", body::binary>>
+    headers_bin = Enum.reduce(headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)
+    <<response_head::binary, headers_bin::binary, "\r\n", body::binary>>
   end
 
-  @spec build_headers([{binary, binary}], non_neg_integer) :: [{binary, binary}]
-  def build_headers(request_headers, content_length) do
-    response_headers =
-      case Enum.find(request_headers, &(elem(&1, 0) == "Connection")) do
-        nil -> request_headers ++ [{"Connection", "keep-alive"}]
-        _ -> request_headers
-      end
-
+  @spec build_headers(Conn.headers(), non_neg_integer) :: Conn.headers()
+  def build_headers(response_headers, content_length) do
     response_headers ++ [{"Content-Length", "#{content_length}"}]
+  end
+
+  @spec connection_header(Conn.headers(), Conn.http_version()) ::
+          {:keepalive | :close, {binary, binary}}
+  def connection_header(_request_headers, :"HTTP/0.9") do
+    {:close, {"Connection", "Close"}}
+  end
+
+  def connection_header(request_headers, :"HTTP/1.0") do
+    header = List.keyfind(request_headers, "Connection", 0, {"Connection", "Close"})
+
+    case header do
+      {"Connection", "Keep-Alive"} -> {:keepalive, {"Connection", "Keep-Alive"}}
+      _ -> {:close, {"Connection", "Close"}}
+    end
+  end
+
+  def connection_header(request_headers, _) do
+    header = List.keyfind(request_headers, "Connection", 0, {"Connection", "Keep-Alive"})
+
+    case header do
+      {"Connection", "Close"} -> {:close, {"Connection", "Close"}}
+      _ -> {:keepalive, {"Connection", "Keep-Alive"}}
+    end
   end
 end

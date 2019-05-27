@@ -68,8 +68,8 @@ defmodule Stargate.Vessel.Conn do
 
   @spec valid_http_version?(http_version) :: boolean
   defp valid_http_version?(:"HTTP/1.1"), do: true
-  # defp valid_http_version?(:"HTTP/1.0"), do: true
-  # defp valid_http_version?(:"HTTP/0.9"), do: true
+  defp valid_http_version?(:"HTTP/1.0"), do: true
+  defp valid_http_version?(:"HTTP/0.9"), do: true
   # defp valid_http_version?(:"HTTP/2.0"), do: true
   # defp valid_http_version?(:"HTTP/3.0"), do: true
   defp valid_http_version?(_), do: false

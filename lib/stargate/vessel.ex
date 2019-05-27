@@ -83,8 +83,13 @@ defmodule Stargate.Vessel do
     case buf do
       <<body::binary-size(bs), buf::binary>> ->
         request = Map.put(config.request, :body, body)
-        config = handle_http_request(request, config)
-        Map.merge(config, %{buf: buf, request: %{}, state: nil})
+        {result, config} = handle_http_request(request, config)
+
+        if result == :close do
+          on_close(config)
+        else
+          Map.merge(config, %{buf: buf, request: %{}, state: nil})
+        end
 
       buf ->
         Map.merge(config, %{buf: buf})
@@ -141,8 +146,13 @@ defmodule Stargate.Vessel do
         case buf do
           <<body::binary-size(clen), buf::binary>> ->
             conn = Map.put(conn, :body, body)
-            config = handle_http_request(conn, config)
-            Map.merge(config, %{buf: buf, request: %{}, state: nil})
+            {result, config} = handle_http_request(conn, config)
+
+            if result == :close do
+              on_close(config)
+            else
+              Map.merge(config, %{buf: buf, request: %{}, state: nil})
+            end
 
           buf ->
             Map.merge(config, %{
@@ -154,8 +164,13 @@ defmodule Stargate.Vessel do
         end
 
       true ->
-        config = handle_http_request(conn, config)
-        Map.merge(config, %{buf: buf, request: %{}, state: nil})
+        {result, config} = handle_http_request(conn, config)
+
+        if result == :close do
+          on_close(config)
+        else
+          Map.merge(config, %{buf: buf, request: %{}, state: nil})
+        end
     end
   rescue
     Errors.MethodNotAllowedError -> method_not_allowed(config)
