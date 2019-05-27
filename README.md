@@ -4,7 +4,7 @@ A Fast Webserver written in Elixir and Erlang.
 ## Status
 Currently, this is very much in alpha. I've taken the great work done by [**@van163**](https://github.com/vans163/stargate) as a starting point and inspiration, in order to build up a fast Webserver in pure Elixir.
 
-I've fully rewritten the Elixir branch of **@van163**'s work, cleaning it up, adding more Elixir structure and features to the project, splitting things into smaller and simpler functions, and adding proper functionalities to support various HTTP standards that the original server didn't support.
+I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding more Elixir structure and features to the project, splitting things into smaller and simpler functions, and adding proper functionalities to support various HTTP standards that the original server didn't support.
 
 ## Current Features
 - Simple support for HTTP/1.1 and below (No HTTP/2.0 or HTTP/3.0 yet)
@@ -29,3 +29,11 @@ I've fully rewritten the Elixir branch of **@van163**'s work, cleaning it up, ad
 ## Credits
 
 The main credit here goes to [**@van163**](https://github.com/vans163) for being frustrated with Elixir's standings in various benchmarks. After seeing his comments about this and his initial work, I decided to undertake this as a project in order to learn more about how web servers work and Elixir as a whole.
+
+## License Remarks
+
+@van163's original project was done under a GNU GPLv3 License. I initially forked his repository in order to have a copy of the code for inspiration and to help me if I was getting stuck anywhere, but I ended up simply writing my code in the same repository.
+
+Since the entirety of the project is being written from scratch, and my intention was always (and still is) only to use @van163's work to help me understand how to write low level TCP code in Elixir and Erlang, I am going to be changing the license from the GNU GPLv3 License to my preferred MIT License.
+
+If someone sees an issue with this and has a valid argument, please open an issue, and I will gladly change it back to the GNU GPLv3 if it's necessary.

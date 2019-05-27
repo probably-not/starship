@@ -53,7 +53,7 @@ defmodule Stargate.Mixfile do
       files: ["lib", "mix.exs", "README.md"],
       maintainers: ["Coby Benveniste"],
       links: %{"GitHub" => "https://github.com/coby-spotim/stargate"},
-      licenses: ["GNU GPL License"]
+      licenses: ["MIT License"]
     ]
   end
 
