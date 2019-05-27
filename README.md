@@ -2,7 +2,9 @@
 A Fast Webserver written in Elixir and Erlang.
 
 ## Status
-Currently, this is very much in alpha. I've taken the great work done by [**@van163**](https://github.com/vans163) and am cleaning it up a bit by adding more Elixir structure and features to the project, so that it can be easily used by everyone.
+Currently, this is very much in alpha. I've taken the great work done by [**@van163**](https://github.com/vans163/stargate) as a starting point and inspiration, in order to build up a fast Webserver in pure Elixir.
+
+I've fully rewritten the Elixir branch of **@van163**'s work, cleaning it up, adding more Elixir structure and features to the project, splitting things into smaller and simpler functions, and adding proper functionalities to support various HTTP standards that the original server didn't support.
 
 ## Current Features
 - Simple support for HTTP/1.1 and below (No HTTP/2.0 or HTTP/3.0 yet)
