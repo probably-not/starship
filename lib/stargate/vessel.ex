@@ -77,7 +77,7 @@ defmodule Stargate.Vessel do
     config
   end
 
-  def on_tcp(config = %{state: :http_body, body_size: bs}, bin) do
+  def on_tcp(%{state: :http_body, body_size: bs} = config, bin) do
     buf = Map.get(config, :buf, <<>>) <> bin
 
     case buf do
@@ -97,14 +97,14 @@ defmodule Stargate.Vessel do
     end_of_header = :binary.match(buf, "\r\n\r\n")
 
     cond do
-      byte_size(buf) > @max_header_size -> close_connection(config)
+      byte_size(buf) > @max_header_size -> header_too_large(config)
       end_of_header == :nomatch -> Map.put(config, :buf, buf)
       is_tuple(end_of_header) -> handle_request(end_of_header, buf, config)
     end
   end
 
-  @spec close_connection(config :: map) :: true
-  def close_connection(config) do
+  @spec header_too_large(config :: map) :: true
+  def header_too_large(config) do
     response_bin = build_response(413, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)

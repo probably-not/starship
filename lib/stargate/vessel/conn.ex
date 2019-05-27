@@ -47,37 +47,37 @@ defmodule Stargate.Vessel.Conn do
             query: %{},
             method: :GET
 
-  @spec http_version!(binary) :: atom | no_return
+  @spec http_version!(binary) :: http_version | no_return
   def http_version!(version) do
-    try do
-      v = Map.fetch!(@http_versions, version)
+    v = Map.fetch!(@http_versions, version)
+    validate_http_version!(v)
+  rescue
+    KeyError ->
+      stacktrace = System.stacktrace()
+      reraise Errors.UnsupportedHttpVersionError, version, stacktrace
+  end
 
-      if valid_http_version?(v) do
-        v
-      else
-        raise Errors.UnsupportedHttpVersionError, v
-      end
-    rescue
-      KeyError ->
-        stacktrace = System.stacktrace()
-        reraise Errors.UnsupportedHttpVersionError, version, stacktrace
+  @spec validate_http_version!(http_version) :: http_version | no_return
+  defp validate_http_version!(version) do
+    if valid_http_version?(version) do
+      version
+    else
+      raise Errors.UnsupportedHttpVersionError, version
     end
   end
 
-  @spec valid_http_version?(atom) :: boolean
+  @spec valid_http_version?(http_version) :: boolean
   defp valid_http_version?(:"HTTP/1.1"), do: true
   defp valid_http_version?(:"HTTP/1.0"), do: true
   defp valid_http_version?(:"HTTP/0.9"), do: true
   defp valid_http_version?(_), do: false
 
-  @spec http_method!(binary) :: atom | no_return
+  @spec http_method!(binary) :: method | no_return
   def http_method!(method) do
-    try do
-      Map.fetch!(@http_methods, method)
-    rescue
-      KeyError ->
-        stacktrace = System.stacktrace()
-        reraise Errors.UnsupportedHttpMethodError, method, stacktrace
-    end
+    Map.fetch!(@http_methods, method)
+  rescue
+    KeyError ->
+      stacktrace = System.stacktrace()
+      reraise Errors.MethodNotAllowedError, method, stacktrace
   end
 end

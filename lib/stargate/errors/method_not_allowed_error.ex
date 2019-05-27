@@ -1,4 +1,4 @@
-defmodule Stargate.Errors.UnsupportedHttpMethodError do
+defmodule Stargate.Errors.MethodNotAllowedError do
   @moduledoc """
   The error that is raised when an unsupported HTTP Method is used in a request
   to the `Stargate` Webserver.

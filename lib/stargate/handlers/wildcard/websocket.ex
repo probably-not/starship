@@ -4,8 +4,8 @@ defmodule Stargate.Handler.Wildcard.Websocket do
   "Returning: " followed by the text that is sent to the socket.
   """
 
-  alias Stargate.Vessel.Websocket.Frame
   alias Stargate.Vessel.Conn
+  alias Stargate.Vessel.Websocket.Frame
 
   @spec connect(Conn.t(), map) :: {:ok, map} | :reject
   def connect(%Conn{} = _conn, config) do

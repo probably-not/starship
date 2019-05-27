@@ -12,7 +12,7 @@ defmodule Stargate.Errors.InvalidHandlerTypeError do
     The request was made using the #{handler_type} handler type,
     which is currently unsupported by the Stargate Webserver.
 
-    The current supported handler types are Websocket and HTTP.
+    The current supported handler types are Websocket (`:ws`) and HTTP (`:http`).
     """
 
     %__MODULE__{message: message}
