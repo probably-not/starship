@@ -24,6 +24,7 @@ defmodule Stargate.Vessel do
         {:pass_socket, csocket} ->
           {transport, socket} =
             if config[:ssl_opts] do
+              # ssl_opts = [{:cacertfile, "cacerts.pem"}, {:certfile, "cert.pem"}, {:keyfile, "key.pem"}]
               {:ok, ssl_socket} = :ssl.handshake(csocket, config.ssl_opts, @ssl_handshake_timeout)
               {:ssl, ssl_socket}
             else
