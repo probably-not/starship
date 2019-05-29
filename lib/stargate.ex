@@ -6,6 +6,18 @@ defmodule Stargate do
 
   If you are an end user of Stargate, this is the only thing that you need to worry about.
   Here is where you will `warp_in` your configuration (or use the default configuration provided) and start the webserver.
+
+  ## A Note On SSL
+
+  You may pass in options to the configuration of Stargate that allow you to use SSL secured connections to connect to the server.
+
+  The SSL options are passed directly into the Erlang SSL Application when the webserver is started, and on all requests,
+  an SSL handshake will be initiated using the certificates and keys that you provided in the initial configuration.
+
+  The SSL options should look something like this:
+  ```elixir
+  ssl_opts = [{:cacertfile, "cacerts.pem"}, {:certfile, "cert.pem"}, {:keyfile, "key.pem"}]
+  ```
   """
 
   alias Stargate.Errors
