@@ -5,7 +5,7 @@ defmodule Stargate.Mixfile do
     [
       app: :stargate,
       version: "0.0.1",
-      elixir: "~> 1.6",
+      elixir: "~> 1.8",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       package: package(),
@@ -38,7 +38,7 @@ defmodule Stargate.Mixfile do
   def deps do
     [
       ## Testing and Development Dependencies
-      {:ex_doc, "~> 0.18.0", only: :dev},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:credo, "~> 1.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
