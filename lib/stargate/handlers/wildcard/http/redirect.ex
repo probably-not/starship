@@ -7,7 +7,7 @@ defmodule Stargate.Handler.Wildcard.Http.Redirect do
 
   @spec http(Conn.t(), map) :: {non_neg_integer, [{binary, binary}], binary, map}
   def http(%Conn{} = conn, config) do
-    {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
+    {_, host} = List.keyfind(conn.headers, "host", 0)
 
     query = Enum.reduce(conn.query, "", fn {k, v}, a -> "#{a}&#{k}=#{v}" end)
     query = if byte_size(query) > 0, do: "?#{String.trim_leading(query, "&")}", else: ""

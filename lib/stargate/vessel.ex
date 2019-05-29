@@ -140,7 +140,7 @@ defmodule Stargate.Vessel do
 
       conn.method == :POST or conn.method == :PUT ->
         # add parsing more content types
-        {"content-length", clen} = Enum.find(conn.headers, fn {k, _} -> k == "content-length" end)
+        {_, clen} = List.keyfind(conn.headers, "content-length", 0)
         clen = :erlang.binary_to_integer(clen)
 
         case buf do
@@ -217,7 +217,10 @@ defmodule Stargate.Vessel do
 
   @spec websocket?(headers :: [{binary, binary}]) :: boolean
   def websocket?(headers) do
-    Enum.find(headers, fn {k, v} -> k == "upgrade" and v == "websocket" end) != nil
+    case List.keyfind(headers, "upgrade", 0) do
+      {"upgrade", "websocket"} -> true
+      _ -> false
+    end
   end
 
   @spec get_host_handler(atom, binary, binary, map) :: {module, map}

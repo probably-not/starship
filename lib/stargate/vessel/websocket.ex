@@ -24,7 +24,7 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec handle_ws_handshake(Conn.t(), map) :: map
   def handle_ws_handshake(%Conn{} = conn, config) do
-    {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
+    {_, host} = List.keyfind(conn.headers, "host", 0)
     {ws_handler, opts} = Vessel.get_host_handler(:ws, host, conn.path, config.hosts)
     config = Map.put(config, :handler, ws_handler)
 
@@ -62,7 +62,7 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec build_handshake_reply_headers([{binary, binary}], map) :: {[{binary, binary}], boolean}
   def build_handshake_reply_headers(headers, opts) do
-    {_, ws_key} = Enum.find(headers, &(elem(&1, 0) == "sec-websocket-key"))
+    {_, ws_key} = List.keyfind(headers, "sec-websocket-key", 0)
     ws_ext = extract_websocket_extensions(headers)
 
     extra_headers =
@@ -86,18 +86,22 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec extract_websocket_extensions([{binary, binary}]) :: map
   def extract_websocket_extensions(headers) do
-    {_, ws_ext} = Enum.find(headers, {"", ""}, &(elem(&1, 0) == "sec-websocket-extensions"))
+    case List.keyfind(headers, "sec-websocket-extensions", 0) do
+      {_, ws_ext} ->
+        ws_ext = String.replace(ws_ext, " ", "")
+        ws_ext = String.split(ws_ext, ",", trim: true)
 
-    ws_ext = String.replace(ws_ext, " ", "")
-    ws_ext = String.split(ws_ext, ",", trim: true)
+        Enum.reduce(ws_ext, %{}, fn ext, acc ->
+          case String.split(ext, ";", trim: true) do
+            [h | [] = _t] -> Map.put(acc, h, "")
+            [h | t] -> Map.put(acc, h, t)
+            _ -> acc
+          end
+        end)
 
-    Enum.reduce(ws_ext, %{}, fn ext, acc ->
-      case String.split(ext, ";", trim: true) do
-        [h | [] = _t] -> Map.put(acc, h, "")
-        [h | t] -> Map.put(acc, h, t)
-        _ -> acc
-      end
-    end)
+      _ ->
+        %{}
+    end
   end
 
   @spec compress_handshake(map, map) :: map

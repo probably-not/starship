@@ -11,7 +11,7 @@ defmodule Stargate.Vessel.Http do
 
   @spec handle_http_request(Conn.t(), map) :: {connection_state, map}
   def handle_http_request(%Conn{http_version: http_version} = conn, config) do
-    {_, host} = Enum.find(conn.headers, &(elem(&1, 0) == "host"))
+    {_, host} = List.keyfind(conn.headers, "host", 0)
     {http_handler, _} = Vessel.get_host_handler(:http, host, conn.path, config.hosts)
     {code, response_headers, body, config} = :erlang.apply(http_handler, :http, [conn, config])
     {connection_state, connection_header} = connection_header(conn.headers, http_version)
