@@ -19,7 +19,9 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
   - [x] On HTTP/1.1 requests, we only close the connection if a "Connection: Close" Header is received from the client, or if we send a "Connection: Close" Header from the server.
 - [ ] Support for HTTP/2.0.
   - [ ] Read the HTTP/2.0 standards and RFCs in order to support it correctly
-- [ ] Optimize the parsing of request data (headers, body, etc.) for fastest performance.
+- [ ] Optimize the parsing of request data for fastest performance.
+  - [x] Header Parsing and Searching
+  - [ ] Body Parsing and Searching
 - [ ] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
 - [ ] Write out the full algorithm for parsing Websocket Frames.
   - As of now, the `Stargate.Vessel.Websocket.Frame` class is very rudimentary, I was able to somewhat figure it out with help from another project, but I still need to write out the full correct way of parsing frames in order to make the server fully websocket compliant.
