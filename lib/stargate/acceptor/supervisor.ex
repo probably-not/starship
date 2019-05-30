@@ -6,14 +6,14 @@ defmodule Stargate.Acceptor.Supervisor do
 
   require Logger
 
-  @spec loop(config :: map) :: no_return
-  def loop(config) do
+  @spec start(map) :: no_return
+  def start(config) do
     Process.flag(:trap_exit, true)
-    loop_1(config)
+    loop(config)
   end
 
-  @spec loop_1(config :: map) :: no_return
-  def loop_1(config) do
+  @spec loop(map) :: no_return
+  def loop(config) do
     acceptors = Map.get(config, :acceptors, [])
     to_spawn = :erlang.system_info(:schedulers) - length(acceptors)
 
@@ -32,7 +32,7 @@ defmodule Stargate.Acceptor.Supervisor do
     receive do
       {:EXIT, pid, reason} ->
         Logger.warn("Exit from Stargate.Acceptor #{inspect(pid)}, Reason: #{inspect(reason)}")
-        loop_1(config)
+        loop(config)
 
       unknown ->
         throw({__MODULE__, :unknown_message, unknown})

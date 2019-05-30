@@ -6,7 +6,7 @@ defmodule Stargate.Errors.MethodNotAllowedError do
   defexception [:message]
 
   @impl true
-  @spec exception(http_method :: binary) :: Exception.t()
+  @spec exception(binary | atom) :: Exception.t()
   def exception(http_method) do
     message = """
     The request was made using the #{http_method} HTTP Method,

@@ -6,7 +6,7 @@ defmodule Stargate.Errors.InvalidHandlerTypeError do
   defexception [:message]
 
   @impl true
-  @spec exception(handler_type :: binary) :: Exception.t()
+  @spec exception(binary | atom) :: Exception.t()
   def exception(handler_type) do
     message = """
     The request was made using the #{handler_type} handler type,

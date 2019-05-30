@@ -6,7 +6,8 @@ defmodule Stargate.Vessel.Conn do
   alias Stargate.Errors
 
   @type body :: binary
-  @type headers :: [{binary, binary}]
+  @type header :: {binary, binary}
+  @type headers :: [header]
   @type http_version :: :"HTTP/0.9" | :"HTTP/1.0" | :"HTTP/1.1" | :"HTTP/2.0" | :"HTTP/3.0"
   @type query :: map
   @type method :: :GET | :HEAD | :POST | :PUT | :DELETE | :CONNECT | :OPTIONS | :TRACE | :PATCH

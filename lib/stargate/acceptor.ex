@@ -13,7 +13,7 @@ defmodule Stargate.Acceptor do
   This loop listens for messages and spawns a `Stargate.Vessel`
   process per request that arrives on the socket.
   """
-  @spec loop(config :: map) :: no_return
+  @spec loop(map) :: no_return
   def loop(config) do
     {:ok, _} = :prim_inet.async_accept(config.listen_socket, -1)
 

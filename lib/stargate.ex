@@ -109,7 +109,7 @@ defmodule Stargate do
 
     config = Map.merge(config, %{listen_socket: lsocket, buf: <<>>})
 
-    :erlang.spawn(Stargate.Acceptor.Supervisor, :loop, [config])
+    :erlang.spawn(Stargate.Acceptor.Supervisor, :start, [config])
   end
 
   @doc """
@@ -216,7 +216,7 @@ defmodule Stargate do
         ssl_opts: nil
       }
   """
-  @spec validate_config!(config :: map) :: map
+  @spec validate_config!(config :: map) :: map | no_return
   def validate_config!(%{ip: ip, port: port, hosts: hosts} = config)
       when is_tuple(ip) and is_integer(port) and is_map(hosts) do
     config

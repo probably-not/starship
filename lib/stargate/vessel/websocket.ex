@@ -60,7 +60,7 @@ defmodule Stargate.Vessel.Websocket do
     config
   end
 
-  @spec build_handshake_reply_headers([{binary, binary}], map) :: {[{binary, binary}], boolean}
+  @spec build_handshake_reply_headers(Conn.headers(), map) :: {Conn.headers(), boolean}
   def build_handshake_reply_headers(headers, opts) do
     {_, ws_key} = List.keyfind(headers, "sec-websocket-key", 0)
     ws_ext = extract_websocket_extensions(headers)
@@ -84,7 +84,7 @@ defmodule Stargate.Vessel.Websocket do
     {reply_headers, length(extra_headers) > 0}
   end
 
-  @spec extract_websocket_extensions([{binary, binary}]) :: map
+  @spec extract_websocket_extensions(Conn.headers()) :: map
   def extract_websocket_extensions(headers) do
     case List.keyfind(headers, "sec-websocket-extensions", 0) do
       {_, ws_ext} ->

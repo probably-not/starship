@@ -5,7 +5,7 @@ defmodule Stargate.Handler.Wildcard.Http.Redirect do
 
   alias Stargate.Vessel.Conn
 
-  @spec http(Conn.t(), map) :: {non_neg_integer, [{binary, binary}], binary, map}
+  @spec http(Conn.t(), map) :: {non_neg_integer, Conn.headers(), binary, map}
   def http(%Conn{} = conn, config) do
     {_, host} = List.keyfind(conn.headers, "host", 0)
 

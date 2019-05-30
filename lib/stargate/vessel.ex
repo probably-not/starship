@@ -8,6 +8,7 @@ defmodule Stargate.Vessel do
 
   alias __MODULE__
   alias Stargate.Errors
+  alias Vessel.Conn
 
   import Vessel.Response, only: [build_response: 4]
   import Vessel.Http, only: [handle_http_request: 2]
@@ -17,7 +18,7 @@ defmodule Stargate.Vessel do
   @vessel_timeout 120_000
   @ssl_handshake_timeout 120_000
 
-  @spec loop(config :: map) :: map | true
+  @spec loop(map) :: map | true
   def loop(config) do
     config =
       receive do
@@ -61,13 +62,13 @@ defmodule Stargate.Vessel do
     loop(config)
   end
 
-  @spec on_close(config :: map) :: true
+  @spec on_close(map) :: true
   def on_close(config) do
     config.transport.close(config.socket)
     Process.exit(self(), :normal)
   end
 
-  @spec on_ws_send(_tuple :: tuple, config :: map) :: map
+  @spec on_ws_send(tuple, map) :: map
   def on_ws_send(_tuple, config) do
     config
   end
@@ -96,7 +97,7 @@ defmodule Stargate.Vessel do
     end
   end
 
-  @spec on_tcp(config :: map, bin :: binary) :: map | true
+  @spec on_tcp(map, binary) :: map | true
   def on_tcp(config, bin) do
     buf = Map.get(config, :buf, <<>>) <> bin
     end_of_header = :binary.match(buf, "\r\n\r\n")
@@ -108,28 +109,28 @@ defmodule Stargate.Vessel do
     end
   end
 
-  @spec header_too_large(config :: map) :: true
+  @spec header_too_large(map) :: true
   def header_too_large(config) do
     response_bin = build_response(413, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)
   end
 
-  @spec method_not_allowed(config :: map) :: true
+  @spec method_not_allowed(map) :: true
   def method_not_allowed(config) do
     response_bin = build_response(405, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)
   end
 
-  @spec http_version_not_supported(config :: map) :: true
+  @spec http_version_not_supported(map) :: true
   def http_version_not_supported(config) do
     response_bin = build_response(505, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_bin)
     Process.exit(self(), :normal)
   end
 
-  @spec handle_request({non_neg_integer, non_neg_integer}, buf :: binary, config :: map) :: map
+  @spec handle_request({non_neg_integer, non_neg_integer}, binary, map) :: map
   def handle_request({end_of_headers, _}, buf, config) do
     {conn, buf} = build_conn(end_of_headers, buf)
 
@@ -177,7 +178,7 @@ defmodule Stargate.Vessel do
     Errors.HttpVersionNotSupportedError -> http_version_not_supported(config)
   end
 
-  @spec build_conn(end_of_headers :: non_neg_integer, buf :: binary) :: {Vessel.Conn.t(), binary}
+  @spec build_conn(non_neg_integer, binary) :: {Conn.t(), binary}
   def build_conn(end_of_headers, buf) do
     <<header_bin::binary-size(end_of_headers), _::32, buf::binary>> = buf
     [req | headers] = String.split(header_bin, "\r\n")
@@ -205,17 +206,17 @@ defmodule Stargate.Vessel do
           {path, %{}}
       end
 
-    {%Vessel.Conn{
-       method: Vessel.Conn.http_method!(method),
+    {%Conn{
+       method: Conn.http_method!(method),
        path: path,
        query: query,
-       http_version: Vessel.Conn.http_version!(http_version),
+       http_version: Conn.http_version!(http_version),
        headers: headers,
        body: ""
      }, buf}
   end
 
-  @spec websocket?(headers :: [{binary, binary}]) :: boolean
+  @spec websocket?(Conn.headers()) :: boolean
   def websocket?(headers) do
     case List.keyfind(headers, "upgrade", 0) do
       {"upgrade", "websocket"} -> true

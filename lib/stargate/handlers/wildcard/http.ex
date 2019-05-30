@@ -5,7 +5,7 @@ defmodule Stargate.Handler.Wildcard.Http do
 
   alias Stargate.Vessel.Conn
 
-  @spec http(Conn.t(), map) :: {non_neg_integer, [{binary, binary}], binary, map}
+  @spec http(Conn.t(), map) :: {non_neg_integer, Conn.headers(), binary, map}
   def http(%Conn{} = _conn, config) do
     {404, [], "The requested page was not found", config}
   end
