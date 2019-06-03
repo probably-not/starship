@@ -3,6 +3,8 @@ defmodule Stargate.Vessel.Conn do
   The connection struct for the `Stargate` Webserver.
   """
 
+  alias __MODULE__
+  alias Conn.Method
   alias Stargate.Errors
 
   @type body :: binary
@@ -10,7 +12,6 @@ defmodule Stargate.Vessel.Conn do
   @type headers :: [header]
   @type http_version :: :"HTTP/0.9" | :"HTTP/1.0" | :"HTTP/1.1" | :"HTTP/2.0" | :"HTTP/3.0"
   @type query :: map
-  @type method :: :GET | :HEAD | :POST | :PUT | :DELETE | :CONNECT | :OPTIONS | :TRACE | :PATCH
 
   @http_versions %{
     "HTTP/0.9" => :"HTTP/0.9",
@@ -21,15 +22,15 @@ defmodule Stargate.Vessel.Conn do
   }
 
   @http_methods %{
-    "GET" => :GET,
-    "HEAD" => :HEAD,
-    "POST" => :POST,
-    "PUT" => :PUT,
-    "DELETE" => :DELETE,
-    "CONNECT" => :CONNECT,
-    "OPTIONS" => :OPTIONS,
-    "TRACE" => :TRACE,
-    "PATCH" => :PATCH
+    "GET" => Method.get(),
+    "HEAD" => Method.head(),
+    "POST" => Method.post(),
+    "PUT" => Method.put(),
+    "DELETE" => Method.delete(),
+    "CONNECT" => Method.connect(),
+    "OPTIONS" => Method.options(),
+    "TRACE" => Method.trace(),
+    "PATCH" => Method.patch()
   }
 
   @type t :: %__MODULE__{
@@ -38,7 +39,7 @@ defmodule Stargate.Vessel.Conn do
           http_version: http_version,
           path: binary,
           query: query,
-          method: method
+          method: Method.t()
         }
 
   defstruct body: "",
@@ -46,7 +47,7 @@ defmodule Stargate.Vessel.Conn do
             http_version: :"HTTP/1.1",
             path: "/",
             query: %{},
-            method: :GET
+            method: Method.get()
 
   @spec http_version!(binary) :: http_version | no_return
   def http_version!(version) do
@@ -75,7 +76,7 @@ defmodule Stargate.Vessel.Conn do
   # defp valid_http_version?(:"HTTP/3.0"), do: true
   defp valid_http_version?(_), do: false
 
-  @spec http_method!(binary) :: method | no_return
+  @spec http_method!(binary) :: Method.t() | no_return
   def http_method!(method) do
     Map.fetch!(@http_methods, method)
   rescue

@@ -78,22 +78,13 @@ defmodule Stargate.Vessel do
     config
   end
 
-  def on_tcp(%{state: :http_body, body_size: bs} = config, bin) do
+  def on_tcp(%{state: :http_body} = config, bin) do
     buf = Map.get(config, :buf, <<>>) <> bin
 
-    case buf do
-      <<body::binary-size(bs), buf::binary>> ->
-        request = Map.put(config.request, :body, body)
-        {result, config} = handle_http_request(request, config)
-
-        if result == :close do
-          on_close(config)
-        else
-          Map.merge(config, %{buf: buf, request: %{}, state: nil})
-        end
-
-      buf ->
-        Map.merge(config, %{buf: buf})
+    case handle_request_with_body(config.request, buf, config) do
+      {:close, config} -> on_close(config)
+      {:keepalive, config} -> Map.merge(config, %{buf: buf, request: %{}, state: nil})
+      %{} = config -> config
     end
   end
 
@@ -139,8 +130,7 @@ defmodule Stargate.Vessel do
         config = handle_ws_handshake(conn, config)
         Map.merge(config, %{buf: buf, state: :ws})
 
-      conn.method == :POST or conn.method == :PUT or conn.method == :PATCH or
-          conn.method == :DELETE ->
+      conn.method.has_body ->
         case handle_request_with_body(conn, buf, config) do
           {:close, config} -> on_close(config)
           {:keepalive, config} -> Map.merge(config, %{buf: buf, request: %{}, state: nil})
