@@ -49,22 +49,20 @@ defmodule Stargate.Vessel.Conn do
             query: %{},
             method: Method.get()
 
-  @spec http_version!(binary) :: http_version | no_return
-  def http_version!(version) do
-    v = Map.fetch!(@http_versions, version)
-    validate_http_version!(v)
-  rescue
-    KeyError ->
-      stacktrace = System.stacktrace()
-      reraise Errors.HttpVersionNotSupportedError, version, stacktrace
+  @spec http_version(binary) :: {:ok, http_version} | {:error, Exception.t()}
+  def http_version(version) do
+    case Map.fetch(@http_versions, version) do
+      :error -> {:error, Errors.HttpVersionNotSupportedError.exception(version)}
+      {:ok, v} -> validate_http_version(v)
+    end
   end
 
-  @spec validate_http_version!(http_version) :: http_version | no_return
-  defp validate_http_version!(version) do
+  @spec validate_http_version(http_version) :: {:ok, http_version} | {:error, Exception.t()}
+  defp validate_http_version(version) do
     if valid_http_version?(version) do
-      version
+      {:ok, version}
     else
-      raise Errors.HttpVersionNotSupportedError, version
+      {:error, Errors.HttpVersionNotSupportedError.exception(version)}
     end
   end
 
@@ -76,12 +74,11 @@ defmodule Stargate.Vessel.Conn do
   # defp valid_http_version?(:"HTTP/3.0"), do: true
   defp valid_http_version?(_), do: false
 
-  @spec http_method!(binary) :: Method.t() | no_return
-  def http_method!(method) do
-    Map.fetch!(@http_methods, method)
-  rescue
-    KeyError ->
-      stacktrace = System.stacktrace()
-      reraise Errors.MethodNotAllowedError, method, stacktrace
+  @spec http_method(binary) :: {:ok, Method.t()} | {:error, Exception.t()}
+  def http_method(method) do
+    case Map.fetch(@http_methods, method) do
+      :error -> {:error, Errors.MethodNotAllowedError.exception(method)}
+      m -> m
+    end
   end
 end

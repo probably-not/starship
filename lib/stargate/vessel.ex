@@ -121,10 +121,17 @@ defmodule Stargate.Vessel do
     Process.exit(self(), :normal)
   end
 
-  @spec handle_request({non_neg_integer, non_neg_integer}, binary, map) :: map
+  @spec handle_request({non_neg_integer, non_neg_integer}, binary, map) :: map | true
   def handle_request({end_of_headers, _}, buf, config) do
-    {conn, buf} = build_conn(end_of_headers, buf)
+    case build_conn(end_of_headers, buf) do
+      {:ok, conn, buf} -> process_request(conn, buf, config)
+      {:error, %Errors.MethodNotAllowedError{}} -> method_not_allowed(config)
+      {:error, %Errors.HttpVersionNotSupportedError{}} -> http_version_not_supported(config)
+    end
+  end
 
+  @spec process_request(Conn.t(), binary, map) :: map
+  def process_request(conn, buf, config) do
     cond do
       websocket?(conn.headers) ->
         config = handle_ws_handshake(conn, config)
@@ -146,47 +153,50 @@ defmodule Stargate.Vessel do
           Map.merge(config, %{buf: buf, request: %{}, state: nil})
         end
     end
-  rescue
-    Errors.MethodNotAllowedError -> method_not_allowed(config)
-    Errors.HttpVersionNotSupportedError -> http_version_not_supported(config)
   end
 
-  @spec build_conn(non_neg_integer, binary) :: {Conn.t(), binary}
+  @spec build_conn(non_neg_integer, binary) :: {:ok, Conn.t(), binary} | {:error, Exception.t()}
   def build_conn(end_of_headers, buf) do
     <<header_bin::binary-size(end_of_headers), _::32, buf::binary>> = buf
     [req | headers] = String.split(header_bin, "\r\n")
     [method, path, http_version] = String.split(req, " ")
 
-    headers =
-      Enum.map(headers, fn line ->
-        [k, v] = String.split(line, ": ")
-        {String.downcase(k), v}
-      end)
+    with {:ok, http_version} <- Conn.http_version(http_version),
+         {:ok, method} <- Conn.http_method(method) do
+      headers =
+        Enum.map(headers, fn line ->
+          [k, v] = String.split(line, ": ")
+          {String.downcase(k), v}
+        end)
 
-    # split out the query from the path
-    {path, query} =
-      case String.split(path, "?") do
-        [p, q] ->
-          kvmap =
-            Enum.reduce(String.split(q, "&"), %{}, fn line, a ->
-              [k, v] = String.split(line, "=")
-              Map.put(a, k, v)
-            end)
+      # split out the query from the path
+      {path, query} =
+        case String.split(path, "?") do
+          [p, q] ->
+            kvmap =
+              Enum.reduce(String.split(q, "&"), %{}, fn line, a ->
+                [k, v] = String.split(line, "=")
+                Map.put(a, k, v)
+              end)
 
-          {p, kvmap}
+            {p, kvmap}
 
-        _ ->
-          {path, %{}}
-      end
+          _ ->
+            {path, %{}}
+        end
 
-    {%Conn{
-       method: Conn.http_method!(method),
-       path: path,
-       query: query,
-       http_version: Conn.http_version!(http_version),
-       headers: headers,
-       body: ""
-     }, buf}
+      {:ok,
+       %Conn{
+         method: method,
+         path: path,
+         query: query,
+         http_version: http_version,
+         headers: headers,
+         body: ""
+       }, buf}
+    else
+      error -> error
+    end
   end
 
   @spec websocket?(Conn.headers()) :: boolean
