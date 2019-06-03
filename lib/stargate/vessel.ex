@@ -11,7 +11,7 @@ defmodule Stargate.Vessel do
   alias Vessel.Conn
 
   import Vessel.Response, only: [build_response: 4]
-  import Vessel.Http, only: [handle_http_request: 2]
+  import Vessel.Http, only: [handle_http_request: 2, handle_request_with_body: 3]
   import Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
 
   @max_header_size 8192
@@ -139,29 +139,12 @@ defmodule Stargate.Vessel do
         config = handle_ws_handshake(conn, config)
         Map.merge(config, %{buf: buf, state: :ws})
 
-      conn.method == :POST or conn.method == :PUT ->
-        # add parsing more content types
-        {_, clen} = List.keyfind(conn.headers, "content-length", 0)
-        clen = :erlang.binary_to_integer(clen)
-
-        case buf do
-          <<body::binary-size(clen), buf::binary>> ->
-            conn = Map.put(conn, :body, body)
-            {result, config} = handle_http_request(conn, config)
-
-            if result == :close do
-              on_close(config)
-            else
-              Map.merge(config, %{buf: buf, request: %{}, state: nil})
-            end
-
-          buf ->
-            Map.merge(config, %{
-              buf: buf,
-              request: conn,
-              state: :http_body,
-              body_size: clen
-            })
+      conn.method == :POST or conn.method == :PUT or conn.method == :PATCH or
+          conn.method == :DELETE ->
+        case handle_request_with_body(conn, buf, config) do
+          {:close, config} -> on_close(config)
+          {:keepalive, config} -> Map.merge(config, %{buf: buf, request: %{}, state: nil})
+          %{} = config -> config
         end
 
       true ->

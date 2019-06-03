@@ -22,4 +22,31 @@ defmodule Stargate.Vessel.Http do
     :ok = config.transport.send(config.socket, response_bin)
     {connection_state, config}
   end
+
+  @spec handle_request_with_body(Conn.t(), binary, map) :: {connection_state, map} | map
+  def handle_request_with_body(%Conn{} = conn, buf, config) do
+    # add parsing more content types
+    {_, clen} = List.keyfind(conn.headers, "content-length", 0)
+    clen = :erlang.binary_to_integer(clen)
+
+    case buf do
+      <<body::binary-size(clen), buf::binary>> ->
+        conn = Map.put(conn, :body, body)
+        {result, config} = handle_http_request(conn, config)
+
+        if result == :keepalive do
+          {result, Map.merge(config, %{buf: buf, request: %{}, state: nil})}
+        else
+          {result, config}
+        end
+
+      buf ->
+        Map.merge(config, %{
+          buf: buf,
+          request: conn,
+          state: :http_body,
+          body_size: clen
+        })
+    end
+  end
 end

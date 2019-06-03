@@ -86,23 +86,26 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec extract_websocket_extensions(Conn.headers()) :: map
   def extract_websocket_extensions(headers) do
-    case List.keyfind(headers, "sec-websocket-extensions", 0) do
-      {_, ws_ext} ->
-        ws_ext = String.replace(ws_ext, " ", "")
-        ws_ext = String.split(ws_ext, ",", trim: true)
-
-        Enum.reduce(ws_ext, %{}, fn ext, acc ->
-          case String.split(ext, ";", trim: true) do
-            [h | [] = _t] -> Map.put(acc, h, "")
-            [h | t] -> Map.put(acc, h, t)
-            _ -> acc
-          end
-        end)
-
-      _ ->
-        %{}
-    end
+    headers
+    |> List.keyfind("sec-websocket-extensions", 0)
+    |> parse_websocket_extensions
   end
+
+  @spec parse_websocket_extensions({any, binary}) :: map
+  defp parse_websocket_extensions({_, ws_ext}) do
+    ws_ext = String.replace(ws_ext, " ", "")
+    ws_ext = String.split(ws_ext, ",", trim: true)
+
+    Enum.reduce(ws_ext, %{}, fn ext, acc ->
+      case String.split(ext, ";", trim: true) do
+        [h | [] = _t] -> Map.put(acc, h, "")
+        [h | t] -> Map.put(acc, h, t)
+        _ -> acc
+      end
+    end)
+  end
+
+  defp parse_websocket_extensions(_), do: %{}
 
   @spec compress_handshake(map, map) :: map
   def compress_handshake(config, opts) do
