@@ -11,13 +11,14 @@ defmodule Stargate.Vessel.Response do
   @spec build_response(non_neg_integer, Conn.headers(), Conn.body(), Conn.http_version()) ::
           binary
   def build_response(code, response_headers, body, http_version) do
-    headers = build_headers(response_headers, byte_size(body))
-    # response_head = <<"#{http_version} #{code} #{response(code)}\r\n"::binary>>
-    response_head = ["#{http_version} ", "#{code} ", "#{response(code)}\r\n"]
-    # headers_bin = Enum.reduce(headers, "", fn {k, v}, a -> a <> "#{k}: #{v}\r\n" end)
-    headers_bin = Enum.map(headers, fn {k, v} -> [k, ": ", v, "\r\n"] end)
-    # <<response_head::binary, headers_bin::binary, "\r\n", body::binary>>
-    [response_head, headers_bin, body]
+    response_head = [to_string(http_version), " ", to_string(code), " ", response(code), "\r\n"]
+
+    headers = [
+      Enum.map(response_headers, fn {k, v} -> [k, ": ", v, "\r\n"] end),
+      "Content-Length: #{byte_size(body)}\r\n"
+    ]
+
+    [response_head, headers, body]
   end
 
   @spec build_headers(Conn.headers(), non_neg_integer) :: Conn.headers()
