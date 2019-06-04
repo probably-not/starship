@@ -31,7 +31,7 @@ defmodule Stargate.Acceptor.Supervisor do
 
     receive do
       {:EXIT, pid, reason} ->
-        Logger.warn("Exit from Stargate.Acceptor #{inspect(pid)}, Reason: #{inspect(reason)}")
+        Logger.warn(["Exit from Stargate.Acceptor ", inspect(pid), ", Reason: ", inspect(reason)])
         loop(config)
 
       unknown ->

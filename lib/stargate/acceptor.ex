@@ -28,7 +28,7 @@ defmodule Stargate.Acceptor do
         loop(config)
 
       {:inet_async, _, _, error} ->
-        Logger.error("INET Async Error: #{inspect(error)}")
+        Logger.error(["INET Async Error: ", inspect(error)])
         loop(config)
 
       unknown ->
