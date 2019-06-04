@@ -15,7 +15,7 @@ defmodule Stargate.Vessel.Response do
 
     headers = [
       Enum.map(response_headers, fn {k, v} -> [k, ": ", v, "\r\n"] end),
-      "Content-Length: #{byte_size(body)}\r\n"
+      ["Content-Length: ", to_string(byte_size(body)), "\r\n"]
     ]
 
     [response_head, headers, body]
