@@ -102,22 +102,22 @@ defmodule Stargate.Vessel do
 
   @spec header_too_large(map) :: true
   def header_too_large(config) do
-    response_bin = build_response(413, [{"Connection", "close"}], "", :"HTTP/1.1")
-    :ok = config.transport.send(config.socket, response_bin)
+    response_io_list = build_response(413, [{"Connection", "close"}], "", :"HTTP/1.1")
+    :ok = config.transport.send(config.socket, response_io_list)
     Process.exit(self(), :normal)
   end
 
   @spec method_not_allowed(map) :: true
   def method_not_allowed(config) do
-    response_bin = build_response(405, [{"Connection", "close"}], "", :"HTTP/1.1")
-    :ok = config.transport.send(config.socket, response_bin)
+    response_io_list = build_response(405, [{"Connection", "close"}], "", :"HTTP/1.1")
+    :ok = config.transport.send(config.socket, response_io_list)
     Process.exit(self(), :normal)
   end
 
   @spec http_version_not_supported(map) :: true
   def http_version_not_supported(config) do
-    response_bin = build_response(505, [{"Connection", "close"}], "", :"HTTP/1.1")
-    :ok = config.transport.send(config.socket, response_bin)
+    response_io_list = build_response(505, [{"Connection", "close"}], "", :"HTTP/1.1")
+    :ok = config.transport.send(config.socket, response_io_list)
     Process.exit(self(), :normal)
   end
 

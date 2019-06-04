@@ -16,10 +16,10 @@ defmodule Stargate.Vessel.Http do
     {code, response_headers, body, config} = :erlang.apply(http_handler, :http, [conn, config])
     {connection_state, connection_header} = connection_header(conn.headers, http_version)
 
-    response_bin =
+    response_io_list =
       build_response(code, [connection_header | response_headers], body, conn.http_version)
 
-    :ok = config.transport.send(config.socket, response_bin)
+    :ok = config.transport.send(config.socket, response_io_list)
     {connection_state, config}
   end
 

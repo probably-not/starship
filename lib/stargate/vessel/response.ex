@@ -9,7 +9,7 @@ defmodule Stargate.Vessel.Response do
   import Response.Codes, only: [response: 1]
 
   @spec build_response(non_neg_integer, Conn.headers(), Conn.body(), Conn.http_version()) ::
-          binary
+          [binary]
   def build_response(code, response_headers, body, http_version) do
     response_head = [to_string(http_version), " ", to_string(code), " ", response(code), "\r\n"]
 
