@@ -5,7 +5,7 @@ defmodule Stargate.Handler.Wildcard.Websocket do
   """
 
   alias Stargate.Vessel.Conn
-  alias Stargate.Vessel.Websocket.Frame
+  alias Stargate.Vessel.Websocket.OldFrame
 
   @spec connect(Conn.t(), map) :: {:ok, map} | :reject
   def connect(%Conn{} = _conn, config) do
@@ -14,7 +14,7 @@ defmodule Stargate.Handler.Wildcard.Websocket do
 
   @spec handle_text_frame(binary, map) :: map
   def handle_text_frame(text, config) do
-    response = Frame.format_server_frame("Returning: #{text}", :text)
+    response = OldFrame.format_server_frame("Returning: #{text}", :text)
     config.transport.send(config.socket, response)
     config
   end

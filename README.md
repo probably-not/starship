@@ -24,7 +24,7 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
   - [ ] Body Parsing and Searching
 - [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
 - [ ] Write out the full algorithm for parsing Websocket Frames.
-  - As of now, the `Stargate.Vessel.Websocket.Frame` class is very rudimentary, I was able to somewhat figure it out with help from another project, but I still need to write out the full correct way of parsing frames in order to make the server fully websocket compliant.
+  - As of now, the `Stargate.Vessel.Websocket.OldFrame` class is very rudimentary, I was able to somewhat figure it out with help from another project, but I still need to write out the full correct way of parsing frames in order to make the server fully websocket compliant.
   - [ ] Make sure that Websocket handshake and websocket handling returns the correct values for `connection_state`.
 - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
   - Alternatively, write an adapter for Plug
