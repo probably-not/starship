@@ -13,6 +13,8 @@ defmodule Stargate.Mixfile do
       source_url: "https://github.com/coby-spotim/stargate",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
+      elixirc_options: [warnings_as_errors: true],
+      aliases: aliases(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -22,7 +24,7 @@ defmodule Stargate.Mixfile do
       ],
       # The main page in the docs
       docs: [main: "Stargate", extras: ["README.md"]],
-      dialyzer: [plt_add_deps: :transitive]
+      dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}, plt_add_deps: :transitive]
     ]
   end
 
@@ -59,4 +61,10 @@ defmodule Stargate.Mixfile do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp aliases do
+    [
+      quality: ["format", "credo --strict", "dialyzer"]
+    ]
+  end
 end
