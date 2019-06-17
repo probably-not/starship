@@ -54,12 +54,11 @@ defmodule Stargate.Vessel.Websocket.Frame do
   end
 
   def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, rest::bits>> = _frame) do
-    {:ok, :fin, :masked, :pong, rest}
+    {:ok, :fin, :masked, :ping, rest}
   end
 
   def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, _rest::bits>> = _frame) do
-    # TODO: Parse Final Pong Frame
-    {:error, :not_implemented_yet}
+    {:ok, :fin, :masked, :pong, nil}
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, _rest::bits>> = _frame) do
@@ -110,5 +109,19 @@ defmodule Stargate.Vessel.Websocket.Frame do
       _ ->
         {first_len, rest}
     end
+  end
+
+  def generate_frame(payload, :text) do
+    <<@fin::bits, 0::size(3), @text::bits, @unmasked::bits, byte_size(payload)::size(7),
+      payload::binary>>
+  end
+
+  def generate_frame(payload, :pong) do
+    <<@fin::bits, 0::size(3), @pong::bits, payload::binary>>
+  end
+
+  def generate_frame(payload, :close) do
+    <<@fin::bits, 0::size(3), @close::bits, @unmasked::bits, byte_size(payload)::size(7),
+      payload::binary>>
   end
 end

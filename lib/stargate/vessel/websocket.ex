@@ -6,6 +6,7 @@ defmodule Stargate.Vessel.Websocket do
   alias Stargate.Vessel
   alias Stargate.Vessel.Conn
   alias Stargate.Vessel.Websocket
+  alias Stargate.Vessel.Websocket.Frame
 
   import Stargate.Vessel.Websocket.Handshake,
     only: [successful_handshake: 3, rejected_handshake: 1]
@@ -18,8 +19,8 @@ defmodule Stargate.Vessel.Websocket do
       {:ok, :fin, :masked, :text, payload} -> handle_text(payload, config)
       # {:ok, :fin, :masked, :binary, payload} -> handle_binary(payload, config)
       # {:ok, :fin, :masked, :close, payload} -> handle_close(payload, config)
-      # {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
-      # {:ok, :fin, :masked, :pong, _payload} -> :ignore
+      {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
+      {:ok, :fin, :masked, :pong, nil} -> handle_pong(config)
       # {:ok, :not_fin, :masked, _, payload} -> handle_fragment(payload, config)
       {:error, reason} -> handle_error(reason, config)
     end
@@ -37,15 +38,22 @@ defmodule Stargate.Vessel.Websocket do
     end
   end
 
-  @spec handle_ping(bitstring, map) :: :not_implemented_yet
-  def handle_ping(_payload, _config) do
-    :not_implemented_yet
+  @spec handle_ping(bitstring, map) :: {:keepalive, map}
+  def handle_ping(payload, config) do
+    response = Frame.generate_frame(payload, :pong)
+    config.transport.send(config.socket, response)
+    {:keepalive, config}
+  end
+
+  @spec handle_pong(map) :: {:keepalive, map}
+  def handle_pong(config) do
+    {:keepalive, config}
   end
 
   @spec handle_text(bitstring, map) :: {:keepalive, map}
   def handle_text(payload, config) do
     {response, config} = config.handler.handle_text(payload, config)
-    response = Websocket.OldFrame.format_server_frame(response, :text)
+    response = Frame.generate_frame(response, :text)
     config.transport.send(config.socket, response)
     {:keepalive, config}
   end
@@ -53,7 +61,7 @@ defmodule Stargate.Vessel.Websocket do
   @spec handle_binary(binary, map) :: {:keepalive, map}
   def handle_binary(payload, config) do
     {response, config} = config.handler.handle_binary(payload, config)
-    response = Websocket.OldFrame.format_server_frame(response, :text)
+    response = Frame.generate_frame(response, :text)
     config.transport.send(config.socket, response)
     {:keepalive, config}
   end
@@ -61,7 +69,7 @@ defmodule Stargate.Vessel.Websocket do
   @spec handle_close(bitstring, map) :: {:close, map}
   def handle_close(payload, config) do
     {response, config} = config.handler.handle_close(payload, config)
-    response = Websocket.OldFrame.format_server_frame(response, :close)
+    response = Frame.generate_frame(response, :close)
     config.transport.send(config.socket, response)
     {:close, config}
   end
