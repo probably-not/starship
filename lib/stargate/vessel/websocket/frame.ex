@@ -53,9 +53,8 @@ defmodule Stargate.Vessel.Websocket.Frame do
     {:error, :not_implemented_yet}
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, _rest::bits>> = _frame) do
-    # TODO: Parse Final Ping Frame
-    {:error, :not_implemented_yet}
+  def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, rest::bits>> = _frame) do
+    {:ok, :fin, :masked, :pong, rest}
   end
 
   def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, _rest::bits>> = _frame) do

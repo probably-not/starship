@@ -75,7 +75,6 @@ defmodule Stargate.Vessel do
 
   def on_tcp(%{state: :ws} = config, bin) do
     handle_ws_frame(bin, config)
-    config
   end
 
   def on_tcp(%{state: :http_body} = config, bin) do

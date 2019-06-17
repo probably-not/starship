@@ -12,8 +12,8 @@ defmodule Stargate.Handler.Wildcard.Websocket do
     {:ok, config}
   end
 
-  @spec handle_text_frame(binary, map) :: map
-  def handle_text_frame(text, config) do
+  @spec handle_text(bitstring, map) :: map
+  def handle_text(text, config) do
     response = OldFrame.format_server_frame("Returning: #{text}", :text)
     config.transport.send(config.socket, response)
     config
