@@ -5,11 +5,9 @@ defmodule Stargate.Vessel.Http do
 
   alias Stargate.Vessel
   alias Stargate.Vessel.Conn
-  import Vessel.Response, only: [build_response: 4, connection_header: 2]
+  import Stargate.Vessel.Response, only: [build_response: 4, connection_header: 2]
 
-  @type connection_state :: :close | :keepalive
-
-  @spec handle_http_request(Conn.t(), map) :: {connection_state, map}
+  @spec handle_http_request(Conn.t(), map) :: {Vessel.connection_state(), map}
   def handle_http_request(%Conn{http_version: http_version} = conn, config) do
     {_, host} = List.keyfind(conn.headers, "host", 0)
     {http_handler, _} = Vessel.get_host_handler(:http, host, conn.path, config.hosts)
@@ -23,7 +21,7 @@ defmodule Stargate.Vessel.Http do
     {connection_state, config}
   end
 
-  @spec handle_request_with_body(Conn.t(), binary, map) :: {connection_state, map} | map
+  @spec handle_request_with_body(Conn.t(), binary, map) :: {Vessel.connection_state(), map} | map
   def handle_request_with_body(%Conn{} = conn, buf, config) do
     # add parsing more content types
     {_, clen} = List.keyfind(conn.headers, "content-length", 0)

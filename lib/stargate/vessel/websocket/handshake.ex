@@ -3,9 +3,8 @@ defmodule Stargate.Vessel.Websocket.Handshake do
   Functions for handling a websocket handshake from `Stargate.Vessel.Websocket`.
   """
 
-  alias Stargate.Vessel
-  alias Vessel.Conn
-  import Vessel.Response, only: [build_response: 4]
+  alias Stargate.Vessel.Conn
+  import Stargate.Vessel.Response, only: [build_response: 4]
 
   @ws_guid "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 

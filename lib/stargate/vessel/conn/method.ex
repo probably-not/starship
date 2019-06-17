@@ -2,7 +2,7 @@ defmodule Stargate.Vessel.Conn.Method do
   @moduledoc """
   The struct and type spec for HTTP Methods
   """
-  alias __MODULE__
+  alias Stargate.Vessel.Conn.Method
 
   @type method :: :GET | :HEAD | :POST | :PUT | :DELETE | :CONNECT | :OPTIONS | :TRACE | :PATCH
 

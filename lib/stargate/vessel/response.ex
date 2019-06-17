@@ -3,10 +3,9 @@ defmodule Stargate.Vessel.Response do
   Functions for building responses that are returned to the client.
   """
 
-  alias __MODULE__
+  alias Stargate.Vessel
   alias Stargate.Vessel.Conn
-  alias Stargate.Vessel.Http
-  import Response.Codes, only: [response: 1]
+  import Stargate.Vessel.Response.Codes, only: [response: 1]
 
   @spec build_response(non_neg_integer, Conn.headers(), Conn.body(), Conn.http_version()) ::
           [binary]
@@ -27,7 +26,7 @@ defmodule Stargate.Vessel.Response do
   end
 
   @spec connection_header(Conn.headers(), Conn.http_version()) ::
-          {Http.connection_state(), Conn.header()}
+          {Vessel.connection_state(), Conn.header()}
   def connection_header(_request_headers, :"HTTP/0.9") do
     {:close, {"Connection", "Close"}}
   end

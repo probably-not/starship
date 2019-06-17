@@ -6,13 +6,21 @@ defmodule Stargate.Vessel do
   a `Stargate.Vessel` process is spawned to handle the request.
   """
 
-  alias __MODULE__
   alias Stargate.Errors
-  alias Vessel.Conn
+  alias Stargate.Vessel.Conn
 
-  import Vessel.Response, only: [build_response: 4]
-  import Vessel.Http, only: [handle_http_request: 2, handle_request_with_body: 3]
-  import Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
+  import Stargate.Vessel.Response, only: [build_response: 4]
+  import Stargate.Vessel.Http, only: [handle_http_request: 2, handle_request_with_body: 3]
+  import Stargate.Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
+
+  @typedoc """
+  The connection state of the port and socket.
+  If set to `:close`, then the socket and port will return a Connection: Close header
+  and close.
+  If set to `:keepalive`, then the socket and port will return a Connection: Keep-Alive header
+  and stay open.
+  """
+  @type connection_state :: :close | :keepalive
 
   @max_header_size 8192
   @vessel_timeout 120_000
@@ -74,7 +82,10 @@ defmodule Stargate.Vessel do
   end
 
   def on_tcp(%{state: :ws} = config, bin) do
-    handle_ws_frame(bin, config)
+    case handle_ws_frame(bin, config) do
+      {:close, config} -> on_close(config)
+      {:keepalive, config} -> config
+    end
   end
 
   def on_tcp(%{state: :http_body} = config, bin) do
@@ -133,8 +144,13 @@ defmodule Stargate.Vessel do
   def process_request(conn, buf, config) do
     cond do
       websocket?(conn.headers) ->
-        config = handle_ws_handshake(conn, config)
-        Map.merge(config, %{buf: buf, state: :ws})
+        {result, config} = handle_ws_handshake(conn, config)
+
+        if result == :close do
+          on_close(config)
+        else
+          Map.merge(config, %{buf: buf, state: :ws})
+        end
 
       conn.method.has_body ->
         case handle_request_with_body(conn, buf, config) do

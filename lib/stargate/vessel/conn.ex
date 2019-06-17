@@ -3,9 +3,8 @@ defmodule Stargate.Vessel.Conn do
   The connection struct for the `Stargate` Webserver.
   """
 
-  alias __MODULE__
-  alias Conn.Method
   alias Stargate.Errors
+  alias Stargate.Vessel.Conn.Method
 
   @type body :: binary
   @type header :: {binary, binary}
