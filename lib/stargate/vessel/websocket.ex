@@ -38,7 +38,7 @@ defmodule Stargate.Vessel.Websocket do
 
   @spec rejected_handshake(map) :: map
   def rejected_handshake(config) do
-    response_io_list = build_response(404, [{"Connection", "close"}], "", :"HTTP/1.1")
+    response_io_list = build_response(400, [{"Connection", "close"}], "", :"HTTP/1.1")
     :ok = config.transport.send(config.socket, response_io_list)
     config
   end
