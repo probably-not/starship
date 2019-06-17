@@ -36,11 +36,6 @@ defmodule Stargate.Vessel.Websocket.Frame do
   @pong <<1::size(1), 0::size(1), 1::size(1), 0::size(1)>>
 
   @spec parse_frame(binary) :: frame | parse_error
-  def parse_frame(<<@fin::bits, _::bits-size(3), @continuation::bits, _rest::bits>> = _frame) do
-    # TODO: Parse Final Continuation Frame
-    {:error, :not_implemented_yet}
-  end
-
   def parse_frame(<<@fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
     case parse(rest) do
       {:ok, payload} -> {:ok, :fin, :masked, :text, payload}
