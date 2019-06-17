@@ -13,7 +13,7 @@ defmodule Stargate.Mixfile do
       source_url: "https://github.com/coby-spotim/stargate",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
-      elixirc_options: [warnings_as_errors: true],
+      # elixirc_options: [warnings_as_errors: true],
       aliases: aliases(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -64,7 +64,8 @@ defmodule Stargate.Mixfile do
 
   defp aliases do
     [
-      quality: ["format", "credo --strict", "dialyzer"]
+      quality: ["format", "credo --strict", "dialyzer"],
+      ci: ["test", "format --check-formatted", "credo --strict", "dialyzer --halt-exit-status"]
     ]
   end
 end
