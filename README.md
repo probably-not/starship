@@ -12,7 +12,7 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
 - Websockets
   - Partially implemented, frames are not fully working yet since the parser is not completely implemented
 
-## TODOS
+## Roadmap/TODOS
 - [x] Support for HTTP/1.1 and below.
   - [x] On HTTP/0.9 requests, we must close the connection on the server side after sending the response.
   - [x] On HTTP/1.0 requests, we must close the connection unless a "Connection: Keep-Alive" Header is received from the client and then subsequently sent by the server.
@@ -25,7 +25,19 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
 - [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
 - [ ] Write out the full algorithm for parsing Websocket Frames.
   - As of now, the `Stargate.Vessel.Websocket.OldFrame` class is very rudimentary, I was able to somewhat figure it out with help from another project, but I still need to write out the full correct way of parsing frames in order to make the server fully websocket compliant.
-  - [ ] Make sure that Websocket handshake and websocket handling returns the correct values for `connection_state`.
+  - [x] Make sure that Websocket handshake and websocket handling returns the correct values for `connection_state`.
+  - [ ] Parsing Received Data Frames:
+    - [x] Text
+    - [ ] Binary
+    - [ ] Ping
+    - [ ] Continuation
+    - [ ] Close
+  - [ ] Generate Server Sent Data Frames:
+    - [ ] Text
+    - [ ] Binary
+    - [ ] Pong
+    - [ ] Continuation
+    - [ ] Close
 - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
   - Alternatively, write an adapter for Plug
 - [ ] Create benchmarks on all aspects and write them out
