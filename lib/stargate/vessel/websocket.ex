@@ -11,6 +11,8 @@ defmodule Stargate.Vessel.Websocket do
   import Stargate.Vessel.Websocket.Handshake,
     only: [successful_handshake: 3, rejected_handshake: 1]
 
+  require Logger
+
   @spec handle_ws_frame(binary, map) :: {Vessel.connection_state(), map}
   def handle_ws_frame(frame, config) do
     frame = Map.get(config, :buf, <<>>) <> frame
@@ -80,7 +82,8 @@ defmodule Stargate.Vessel.Websocket do
   end
 
   @spec handle_error(atom, map) :: {:close, map}
-  def handle_error(_error, config) do
+  def handle_error(error, config) do
+    Logger.error(["Websocket Frame Error: ", inspect(error)])
     {:close, config}
   end
 end
