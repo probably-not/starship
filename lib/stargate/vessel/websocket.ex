@@ -14,13 +14,11 @@ defmodule Stargate.Vessel.Websocket do
 
     case Websocket.Frame.parse_frame(frame) do
       {:ok, :fin, :masked, :text, payload} -> config.handler.handle_text(payload, config)
-      {:ok, :fin, :masked, :binary, payload} -> config.handler.handle_binary(payload, config)
-      {:ok, :fin, :masked, :close, payload} -> config.handler.handle_close(payload, config)
-      {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
-      {:ok, :fin, :masked, :pong, _payload} -> :ignore
-      {:ok, :not_fin, :masked, :continuation, payload} -> handle_fragment(payload, config)
-      {:ok, :not_fin, :masked, :text, payload} -> handle_fragment(payload, config)
-      {:ok, :not_fin, :masked, :binary, payload} -> handle_fragment(payload, config)
+      # {:ok, :fin, :masked, :binary, payload} -> config.handler.handle_binary(payload, config)
+      # {:ok, :fin, :masked, :close, payload} -> config.handler.handle_close(payload, config)
+      # {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
+      # {:ok, :fin, :masked, :pong, _payload} -> :ignore
+      # {:ok, :not_fin, :masked, _, payload} -> handle_fragment(payload, config)
       {:error, _reason} -> rejected_handshake(config)
     end
 
@@ -39,12 +37,12 @@ defmodule Stargate.Vessel.Websocket do
     end
   end
 
-  @spec handle_ping(bitstring, map) :: map
+  @spec handle_ping(bitstring, map) :: :not_implemented_yet
   def handle_ping(_payload, _config) do
     :not_implemented_yet
   end
 
-  @spec handle_fragment(bitstring, map) :: map
+  @spec handle_fragment(bitstring, map) :: :not_implemented_yet
   def handle_fragment(_payload, _config) do
     :not_implemented_yet
   end
