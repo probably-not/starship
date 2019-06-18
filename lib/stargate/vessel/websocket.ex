@@ -20,10 +20,11 @@ defmodule Stargate.Vessel.Websocket do
     case Websocket.Frame.parse_frame(frame) do
       {:ok, :fin, :masked, :text, payload} -> handle_text(payload, config)
       # {:ok, :fin, :masked, :binary, payload} -> handle_binary(payload, config)
-      # {:ok, :fin, :masked, :close, payload} -> handle_close(payload, config)
+      {:ok, :fin, :masked, :close, payload} -> handle_close(payload, config)
       {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
       {:ok, :fin, :masked, :pong, nil} -> handle_pong(config)
-      # {:ok, :not_fin, :masked, _, payload} -> handle_fragment(payload, config)
+      {:ok, :not_fin, :masked, :text, payload} -> handle_fragment(payload, config)
+      # {:ok, :not_fin, :masked, :binary, payload} -> handle_fragment(payload, config)
       {:error, reason} -> handle_error(reason, config)
     end
   end
@@ -76,9 +77,10 @@ defmodule Stargate.Vessel.Websocket do
     {:close, config}
   end
 
-  @spec handle_fragment(bitstring, map) :: :not_implemented_yet
-  def handle_fragment(_payload, _config) do
-    :not_implemented_yet
+  @spec handle_fragment(bitstring, map) :: {:close, map}
+  def handle_fragment(_payload, config) do
+    Logger.error("Websocket Frame Error: Fragmentation not implemented")
+    {:close, config}
   end
 
   @spec handle_error(atom, map) :: {:close, map}

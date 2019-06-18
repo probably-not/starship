@@ -28,15 +28,15 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
   - [ ] Parsing Received Data Frames:
     - [x] Text
     - [ ] Binary
-    - [ ] Ping
+    - [x] Ping
     - [ ] Continuation
-    - [ ] Close
+    - [x] Close
   - [ ] Generate Server Sent Data Frames:
     - [x] Text
     - [ ] Binary
-    - [ ] Pong
+    - [x] Pong
     - [ ] Continuation
-    - [ ] Close
+    - [x] Close
 - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
   - Alternatively, write an adapter for Plug
 - [ ] Create benchmarks on all aspects and write them out

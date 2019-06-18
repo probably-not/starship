@@ -48,17 +48,27 @@ defmodule Stargate.Vessel.Websocket.Frame do
     {:error, :not_implemented_yet}
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @close::bits, _rest::bits>> = _frame) do
-    # TODO: Parse Final Close Frame
-    {:error, :not_implemented_yet}
+  def parse_frame(<<@fin::bits, _::bits-size(3), @close::bits, rest::bits>> = _frame) do
+    case parse(rest) do
+      {:ok, payload} -> {:ok, :fin, :masked, :close, payload}
+      error -> error
+    end
   end
 
   def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, rest::bits>> = _frame) do
-    {:ok, :fin, :masked, :ping, rest}
+    if masked?(rest) do
+      {:ok, :fin, :masked, :ping, rest}
+    else
+      {:error, :unmasked_frame}
+    end
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, _rest::bits>> = _frame) do
-    {:ok, :fin, :masked, :pong, nil}
+  def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, rest::bits>> = _frame) do
+    if masked?(rest) do
+      {:ok, :fin, :masked, :pong, nil}
+    else
+      {:error, :unmasked_frame}
+    end
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, _rest::bits>> = _frame) do
@@ -66,9 +76,11 @@ defmodule Stargate.Vessel.Websocket.Frame do
     {:error, :not_implemented_yet}
   end
 
-  def parse_frame(<<@not_fin::bits, _::bits-size(3), @text::bits, _rest::bits>> = _frame) do
-    # TODO: Parse Not Final Text Frame
-    {:error, :not_implemented_yet}
+  def parse_frame(<<@not_fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
+    case parse(rest) do
+      {:ok, payload} -> {:ok, :not_fin, :masked, :text, payload}
+      error -> error
+    end
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @binary::bits, _rest::bits>> = _frame) do
@@ -110,6 +122,9 @@ defmodule Stargate.Vessel.Websocket.Frame do
         {first_len, rest}
     end
   end
+
+  defp masked?(<<@masked::bits, _rest::bits>> = _frame), do: true
+  defp masked?(<<@unmasked::bits, _rest::bits>> = _frame), do: false
 
   def generate_frame(payload, :text) do
     <<@fin::bits, 0::size(3), @text::bits, @unmasked::bits, byte_size(payload)::size(7),
