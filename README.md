@@ -13,33 +13,39 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
   - Partially implemented, frames are not fully working yet since the parser is not completely implemented
 
 ## Roadmap/TODOS
-- [x] Support for HTTP/1.1 and below.
-  - [x] On HTTP/0.9 requests, we must close the connection on the server side after sending the response.
-  - [x] On HTTP/1.0 requests, we must close the connection unless a "Connection: Keep-Alive" Header is received from the client and then subsequently sent by the server.
-  - [x] On HTTP/1.1 requests, we only close the connection if a "Connection: Close" Header is received from the client, or if we send a "Connection: Close" Header from the server.
-- [ ] Support for HTTP/2.0.
-  - [ ] Read the HTTP/2.0 standards and RFCs in order to support it correctly
+- [ ] HTTP Standards
+  - [x] Support for HTTP/1.1 and below.
+    - [x] On HTTP/0.9 requests, we must close the connection on the server side after sending the response.
+    - [x] On HTTP/1.0 requests, we must close the connection unless a "Connection: Keep-Alive" Header is received from the client and then subsequently sent by the server.
+    - [x] On HTTP/1.1 requests, we only close the connection if a "Connection: Close" Header is received from the client, or if we send a "Connection: Close" Header from the server.
+  - [ ] Support for HTTP/2.0.
+    - [ ] Read the HTTP/2.0 standards and RFCs in order to support it correctly
+  - [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
 - [ ] Optimize the parsing of request data for fastest performance.
-  - [x] Header Parsing and Searching
-  - [ ] Body Parsing and Searching
-- [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
-- [ ] Write out the full algorithm for parsing Websocket Frames.
-  - [x] Make sure that Websocket handshake and websocket handling returns the correct values for `connection_state`.
-  - [ ] Parsing Received Data Frames:
-    - [x] Text
-    - [ ] Binary
-    - [x] Ping
-    - [ ] Continuation
-    - [x] Close
-  - [ ] Generate Server Sent Data Frames:
-    - [x] Text
-    - [ ] Binary
-    - [x] Pong
-    - [ ] Continuation
-    - [x] Close
-- [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
-  - Alternatively, write an adapter for Plug
-- [ ] Create benchmarks on all aspects and write them out
+  - [x] Header Parsing and Organizing
+  - [ ] Cookie Parsing and Organizing
+  - [ ] Body Parsing and Organizing
+- [ ] Websocket Standards
+  - [x] Make sure that Websocket Handshake and Handlers return the correct values for `Stargate.Vessel.connection_state`.
+  - [ ] Parsing Websocket Frames.
+    - [ ] Receiving Data Frames:
+      - [x] Text
+      - [ ] Binary
+        - Stargate should be able to decode the data frames as binary, however, the application using Stargate needs to be able to receive and handle binary data, otherwise we will close the connection and return a termination error code
+      - [x] Ping
+      - [ ] Continuation/Fragmentation
+      - [x] Close
+    - [ ] Generate Server Sent Data Frames:
+      - [x] Text
+      - [ ] Binary
+        - Check if encoding server sent data frames as binary is part of the standard
+        - If it is in the standard, Stargate should be able to encode the data frames as binary.
+      - [x] Pong
+      - [x] Close
+- [ ] Extras
+  - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
+    - Alternatively, write an adapter for Plug
+  - [ ] Create benchmarks on all aspects and write them out
 
 ## Credits
 
