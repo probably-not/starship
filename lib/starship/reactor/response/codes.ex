@@ -1,0 +1,80 @@
+defmodule Starship.Reactor.Response.Codes do
+  @moduledoc """
+  All Response Codes that the `Starship` Webserver can currently return.
+  """
+
+  @spec response(non_neg_integer) :: bitstring
+
+  # 1×× Informational
+  def response(100), do: "Continue"
+  def response(101), do: "Switching Protocols"
+  def response(102), do: "Processing"
+
+  # 2×× Success
+  def response(200), do: "OK"
+  def response(201), do: "Created"
+  def response(202), do: "Accepted"
+  def response(203), do: "Non-authoritative Information"
+  def response(204), do: "No Content"
+  def response(205), do: "Reset Content"
+  def response(206), do: "Partial Content"
+  def response(207), do: "Multi-Status"
+  def response(208), do: "Already Reported"
+  def response(226), do: "IM Used"
+
+  # 3×× Redirection
+  def response(300), do: "Multiple Choices"
+  def response(301), do: "Moved Permanently"
+  def response(302), do: "Found"
+  def response(303), do: "See Other"
+  def response(304), do: "Not Modified"
+  def response(305), do: "Use Proxy"
+  def response(307), do: "Temporary Redirect"
+  def response(308), do: "Permanent Redirect"
+
+  # 4×× Client Error
+  def response(400), do: "Bad Request"
+  def response(401), do: "Unauthorized"
+  def response(402), do: "Payment Required"
+  def response(403), do: "Forbidden"
+  def response(404), do: "Not Found"
+  def response(405), do: "Method Not Allowed"
+  def response(406), do: "Not Acceptable"
+  def response(407), do: "Proxy Authentication Required"
+  def response(408), do: "Request Timeout"
+  def response(409), do: "Conflict"
+  def response(410), do: "Gone"
+  def response(411), do: "Length Required"
+  def response(412), do: "Precondition Failed"
+  def response(413), do: "Payload Too Large"
+  def response(414), do: "Request-URI Too Long"
+  def response(415), do: "Unsupported Media Type"
+  def response(416), do: "Requested Range Not Satisfiable"
+  def response(417), do: "Expectation Failed"
+  def response(418), do: "I'm a teapot"
+  def response(421), do: "Misdirected Request"
+  def response(422), do: "Unprocessable Entity"
+  def response(423), do: "Locked"
+  def response(424), do: "Failed Dependency"
+  def response(426), do: "Upgrade Required"
+  def response(428), do: "Precondition Required"
+  def response(429), do: "Too Many Requests"
+  def response(431), do: "Request Header Fields Too Large"
+  def response(444), do: "Connection Closed Without Response"
+  def response(451), do: "Unavailable For Legal Reasons"
+  def response(499), do: "Client Closed Request"
+
+  # 5×× Server Error
+  def response(500), do: "Internal Server Error"
+  def response(501), do: "Not Implemented"
+  def response(502), do: "Bad Gateway"
+  def response(503), do: "Service Unavailable"
+  def response(504), do: "Gateway Timeout"
+  def response(505), do: "HTTP Version Not Supported"
+  def response(506), do: "Variant Also Negotiates"
+  def response(507), do: "Insufficient Storage"
+  def response(508), do: "Loop Detected"
+  def response(510), do: "Not Extended"
+  def response(511), do: "Network Authentication Required"
+  def response(599), do: "Network Connect Timeout Error"
+end
