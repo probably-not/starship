@@ -2,7 +2,7 @@ defmodule Starship.Drive do
   @moduledoc """
   The TCP Acceptor used by the `Starship` Webserver.
 
-  A `Starship.Drive` is started by the `Starship.Drive.Supervisor` per open socket.
+  A `Starship.Drive` is started by the `Starship.Drive.Engine` per open socket.
   """
 
   require Logger

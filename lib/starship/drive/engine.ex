@@ -1,4 +1,4 @@
-defmodule Starship.Drive.Supervisor do
+defmodule Starship.Drive.Engine do
   @moduledoc """
   The TCP Acceptor supervisor, which spawns and supervises `Starship.Drive`
   processes to handle the requests to the `Starship` Webserver.
