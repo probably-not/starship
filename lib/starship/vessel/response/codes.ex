@@ -1,4 +1,4 @@
-defmodule Starship.Vessel.Response.Codes do
+defmodule Starship.Reactor.Response.Codes do
   @moduledoc """
   All Response Codes that the `Starship` Webserver can currently return.
   """

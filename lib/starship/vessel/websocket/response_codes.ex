@@ -1,4 +1,4 @@
-defmodule Starship.Vessel.Websocket.ResponseCodes do
+defmodule Starship.Reactor.Websocket.ResponseCodes do
   @moduledoc """
   Response Codes to be returned by a Websocket close frame.
   """

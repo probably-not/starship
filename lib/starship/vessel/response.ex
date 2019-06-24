@@ -1,11 +1,11 @@
-defmodule Starship.Vessel.Response do
+defmodule Starship.Reactor.Response do
   @moduledoc """
   Functions for building responses that are returned to the client.
   """
 
-  alias Starship.Vessel
-  alias Starship.Vessel.Conn
-  import Starship.Vessel.Response.Codes, only: [response: 1]
+  alias Starship.Reactor
+  alias Starship.Reactor.Conn
+  import Starship.Reactor.Response.Codes, only: [response: 1]
 
   @spec build_response(non_neg_integer, Conn.headers(), Conn.body(), Conn.http_version()) ::
           [binary]
@@ -26,7 +26,7 @@ defmodule Starship.Vessel.Response do
   end
 
   @spec connection_header(Conn.headers(), Conn.http_version()) ::
-          {Vessel.connection_state(), Conn.header()}
+          {Reactor.connection_state(), Conn.header()}
   def connection_header(_request_headers, :"HTTP/0.9") do
     {:close, {"Connection", "Close"}}
   end

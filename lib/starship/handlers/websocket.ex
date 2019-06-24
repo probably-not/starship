@@ -3,7 +3,7 @@ defmodule Starship.Handlers.Websocket do
   A behaviour module fo use when creating HTTP handlers for the `Starship` Webserver.
   """
   alias Starship.Handlers.Websocket
-  alias Starship.Vessel.Conn
+  alias Starship.Reactor.Conn
 
   @callback connect(Conn.t(), map) :: {:ok, map} | :reject
   @callback handle_text(bitstring, map) :: {binary, map}

@@ -1,16 +1,16 @@
-defmodule Starship.Vessel.Http do
+defmodule Starship.Reactor.Http do
   @moduledoc """
-  Functions for handling HTTP Requests in `Starship.Vessel`.
+  Functions for handling HTTP Requests in `Starship.Reactor`.
   """
 
-  alias Starship.Vessel
-  alias Starship.Vessel.Conn
-  import Starship.Vessel.Response, only: [build_response: 4, connection_header: 2]
+  alias Starship.Reactor
+  alias Starship.Reactor.Conn
+  import Starship.Reactor.Response, only: [build_response: 4, connection_header: 2]
 
-  @spec handle_http_request(Conn.t(), map) :: {Vessel.connection_state(), map}
+  @spec handle_http_request(Conn.t(), map) :: {Reactor.connection_state(), map}
   def handle_http_request(%Conn{http_version: http_version} = conn, config) do
     {_, host} = List.keyfind(conn.headers, "host", 0)
-    {http_handler, _} = Vessel.get_host_handler(:http, host, conn.path, config.hosts)
+    {http_handler, _} = Reactor.get_host_handler(:http, host, conn.path, config.hosts)
     {code, response_headers, body, config} = :erlang.apply(http_handler, :http, [conn, config])
     {connection_state, connection_header} = connection_header(conn.headers, http_version)
 
@@ -21,7 +21,7 @@ defmodule Starship.Vessel.Http do
     {connection_state, config}
   end
 
-  @spec handle_request_with_body(Conn.t(), binary, map) :: {Vessel.connection_state(), map} | map
+  @spec handle_request_with_body(Conn.t(), binary, map) :: {Reactor.connection_state(), map} | map
   def handle_request_with_body(%Conn{} = conn, buf, config) do
     # add parsing more content types
     {_, clen} = List.keyfind(conn.headers, "content-length", 0)

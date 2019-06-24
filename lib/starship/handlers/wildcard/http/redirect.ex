@@ -3,7 +3,7 @@ defmodule Starship.Handler.Wildcard.Http.Redirect do
   A simple wildcard handler for redirecting HTTP requests from non-secured to secured endpoints.
   """
 
-  alias Starship.Vessel.Conn
+  alias Starship.Reactor.Conn
 
   @spec http(Conn.t(), map) :: {non_neg_integer, Conn.headers(), binary, map}
   def http(%Conn{} = conn, config) do

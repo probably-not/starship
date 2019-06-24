@@ -1,9 +1,9 @@
-defmodule Starship.Vessel.Conn.Method do
+defmodule Starship.Reactor.Conn.Method do
   @moduledoc """
   The struct and type spec for HTTP Methods
   """
 
-  alias Starship.Vessel.Conn.Method
+  alias Starship.Reactor.Conn.Method
 
   @typedoc "HTTP Methods according to HTTP Standards."
   @type method :: :GET | :HEAD | :POST | :PUT | :DELETE | :CONNECT | :OPTIONS | :TRACE | :PATCH

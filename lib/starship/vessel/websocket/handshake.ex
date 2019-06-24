@@ -1,10 +1,10 @@
-defmodule Starship.Vessel.Websocket.Handshake do
+defmodule Starship.Reactor.Websocket.Handshake do
   @moduledoc """
-  Functions for handling a websocket handshake from `Starship.Vessel.Websocket`.
+  Functions for handling a websocket handshake from `Starship.Reactor.Websocket`.
   """
 
-  alias Starship.Vessel.Conn
-  import Starship.Vessel.Response, only: [build_response: 4]
+  alias Starship.Reactor.Conn
+  import Starship.Reactor.Response, only: [build_response: 4]
 
   @ws_guid "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 

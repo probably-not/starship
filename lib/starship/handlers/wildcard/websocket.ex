@@ -5,7 +5,7 @@ defmodule Starship.Handler.Wildcard.Websocket do
   """
 
   use Starship.Handlers.Websocket
-  alias Starship.Vessel.Conn
+  alias Starship.Reactor.Conn
 
   @spec connect(Conn.t(), map) :: {:ok, map} | :reject
   def connect(%Conn{} = _conn, config) do

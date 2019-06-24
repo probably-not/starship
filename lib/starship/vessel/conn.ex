@@ -1,11 +1,11 @@
-defmodule Starship.Vessel.Conn do
+defmodule Starship.Reactor.Conn do
   @moduledoc """
   The connection struct for the `Starship` Webserver.
   """
 
   alias Starship.Errors
-  alias Starship.Vessel.Conn
-  alias Starship.Vessel.Conn.Method
+  alias Starship.Reactor.Conn
+  alias Starship.Reactor.Conn.Method
 
   @typedoc "The body of an HTTP request"
   @type body :: binary

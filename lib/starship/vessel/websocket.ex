@@ -1,19 +1,19 @@
-defmodule Starship.Vessel.Websocket do
+defmodule Starship.Reactor.Websocket do
   @moduledoc """
-  Functions for handling Websocket Requests in `Starship.Vessel`.
+  Functions for handling Websocket Requests in `Starship.Reactor`.
   """
 
-  alias Starship.Vessel
-  alias Starship.Vessel.Conn
-  alias Starship.Vessel.Websocket
-  alias Starship.Vessel.Websocket.Frame
+  alias Starship.Reactor
+  alias Starship.Reactor.Conn
+  alias Starship.Reactor.Websocket
+  alias Starship.Reactor.Websocket.Frame
 
-  import Starship.Vessel.Websocket.Handshake,
+  import Starship.Reactor.Websocket.Handshake,
     only: [successful_handshake: 3, rejected_handshake: 1]
 
   require Logger
 
-  @spec handle_ws_frame(binary, map) :: {Vessel.connection_state(), map}
+  @spec handle_ws_frame(binary, map) :: {Reactor.connection_state(), map}
   def handle_ws_frame(frame, config) do
     frame = Map.get(config, :buf, <<>>) <> frame
 
@@ -29,10 +29,10 @@ defmodule Starship.Vessel.Websocket do
     end
   end
 
-  @spec handle_ws_handshake(Conn.t(), map) :: {Vessel.connection_state(), map}
+  @spec handle_ws_handshake(Conn.t(), map) :: {Reactor.connection_state(), map}
   def handle_ws_handshake(%Conn{} = conn, config) do
     {_, host} = List.keyfind(conn.headers, "host", 0)
-    {ws_handler, opts} = Vessel.get_host_handler(:ws, host, conn.path, config.hosts)
+    {ws_handler, opts} = Reactor.get_host_handler(:ws, host, conn.path, config.hosts)
     config = Map.put(config, :handler, ws_handler)
 
     case :erlang.apply(ws_handler, :connect, [conn, config]) do

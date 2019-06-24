@@ -3,7 +3,7 @@ defmodule Starship.Handler.Wildcard.Http do
   A simple wildcard handler for HTTP Requests that always returns 404 Not Found responses.
   """
 
-  alias Starship.Vessel.Conn
+  alias Starship.Reactor.Conn
 
   @spec http(Conn.t(), map) :: {non_neg_integer, Conn.headers(), binary, map}
   def http(%Conn{} = _conn, config) do

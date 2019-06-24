@@ -1,9 +1,9 @@
-defmodule Starship.Vessel.Config do
+defmodule Starship.Reactor.Config do
   @moduledoc """
   The configuration struct for the `Starship` Webserver.
   """
 
-  alias Starship.Vessel.Config
+  alias Starship.Reactor.Config
 
   @typedoc """
   The configuration that is passed to the Webserver when started,

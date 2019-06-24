@@ -26,7 +26,7 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
   - [ ] Cookie Parsing and Organizing
   - [ ] Body Parsing and Organizing
 - [ ] Websocket Standards
-  - [x] Make sure that Websocket Handshake and Handlers return the correct values for `Starship.Vessel.connection_state`.
+  - [x] Make sure that Websocket Handshake and Handlers return the correct values for `Starship.Reactor.connection_state`.
   - [ ] Parsing Websocket Frames.
     - [ ] Receiving Data Frames:
       - [x] Text

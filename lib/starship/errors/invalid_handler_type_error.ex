@@ -1,7 +1,7 @@
 defmodule Starship.Errors.InvalidHandlerTypeError do
   @moduledoc """
   The error that is raised when an invalid
-  handler type is passed to `Starship.Vessel.get_host_handler/4`.
+  handler type is passed to `Starship.Reactor.get_host_handler/4`.
   """
   defexception [:message]
 

@@ -10,7 +10,7 @@ defmodule Starship.Acceptor do
   @doc """
   The main event loop for the `Starship.Acceptor` process.
 
-  This loop listens for messages and spawns a `Starship.Vessel`
+  This loop listens for messages and spawns a `Starship.Reactor`
   process per request that arrives on the socket.
   """
   @spec loop(map) :: no_return
@@ -19,7 +19,7 @@ defmodule Starship.Acceptor do
 
     receive do
       {:inet_async, _listen_socket, _, {:ok, csocket}} ->
-        pid = :erlang.spawn(Starship.Vessel, :loop, [config])
+        pid = :erlang.spawn(Starship.Reactor, :loop, [config])
 
         :inet_db.register_socket(csocket, :inet_tcp)
         :ok = :gen_tcp.controlling_process(csocket, pid)

@@ -1,4 +1,4 @@
-defmodule Starship.Vessel.Websocket.Frame do
+defmodule Starship.Reactor.Websocket.Frame do
   @moduledoc """
   A websocket frame helper, used to parse and generate websocket frames.
   """

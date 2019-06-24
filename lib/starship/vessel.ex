@@ -1,17 +1,17 @@
-defmodule Starship.Vessel do
+defmodule Starship.Reactor do
   @moduledoc """
   The main request handler for the `Starship` Webserver.
 
   When a message is passed to a `Starship.Acceptor` process,
-  a `Starship.Vessel` process is spawned to handle the request.
+  a `Starship.Reactor` process is spawned to handle the request.
   """
 
   alias Starship.Errors
-  alias Starship.Vessel.Conn
+  alias Starship.Reactor.Conn
 
-  import Starship.Vessel.Response, only: [build_response: 4]
-  import Starship.Vessel.Http, only: [handle_http_request: 2, handle_request_with_body: 3]
-  import Starship.Vessel.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
+  import Starship.Reactor.Response, only: [build_response: 4]
+  import Starship.Reactor.Http, only: [handle_http_request: 2, handle_request_with_body: 3]
+  import Starship.Reactor.Websocket, only: [handle_ws_handshake: 2, handle_ws_frame: 2]
 
   @typedoc """
   The connection state of the port and socket.
@@ -25,7 +25,7 @@ defmodule Starship.Vessel do
   @type connection_state :: :close | :keepalive
 
   @max_header_size 8192
-  @vessel_timeout 120_000
+  @reactor_timeout 120_000
   @ssl_handshake_timeout 120_000
 
   @spec loop(map) :: map | true
@@ -65,7 +65,7 @@ defmodule Starship.Vessel do
         {:ws_send, tuple} ->
           on_ws_send(tuple, config)
       after
-        @vessel_timeout ->
+        @reactor_timeout ->
           :close
       end
 
