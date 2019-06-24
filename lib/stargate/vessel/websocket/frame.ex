@@ -2,7 +2,6 @@ defmodule Stargate.Vessel.Websocket.Frame do
   @moduledoc """
   A websocket frame helper, used to parse and generate websocket frames.
   """
-  # credo:disable-for-this-file
 
   @typep opcode :: :continuation | :text | :binary | :close | :ping | :pong
   @typep fin_bit :: :fin | :not_fin
@@ -35,6 +34,9 @@ defmodule Stargate.Vessel.Websocket.Frame do
   # 0xA
   @pong <<1::size(1), 0::size(1), 1::size(1), 0::size(1)>>
 
+  @doc """
+  Parses a websocket frame into a readable payload (bitstring, binary, or nil values).
+  """
   @spec parse_frame(binary) :: frame | parse_error
   def parse_frame(<<@fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
     case parse(rest) do
@@ -44,6 +46,7 @@ defmodule Stargate.Vessel.Websocket.Frame do
   end
 
   def parse_frame(<<@fin::bits, _::bits-size(3), @binary::bits, _rest::bits>> = _frame) do
+    # credo:disable-for-next-line
     # TODO: Parse Final Binary Frame
     {:error, :not_implemented_yet}
   end
@@ -72,6 +75,7 @@ defmodule Stargate.Vessel.Websocket.Frame do
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, _rest::bits>> = _frame) do
+    # credo:disable-for-next-line
     # TODO: Parse Not Final Continuation Frame
     {:error, :not_implemented_yet}
   end
@@ -84,6 +88,7 @@ defmodule Stargate.Vessel.Websocket.Frame do
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @binary::bits, _rest::bits>> = _frame) do
+    # credo:disable-for-next-line
     # TODO: Parse Not Final Binary Frame
     {:error, :not_implemented_yet}
   end
@@ -123,9 +128,11 @@ defmodule Stargate.Vessel.Websocket.Frame do
     end
   end
 
+  @spec masked?(binary) :: boolean
   defp masked?(<<@masked::bits, _rest::bits>> = _frame), do: true
   defp masked?(<<@unmasked::bits, _rest::bits>> = _frame), do: false
 
+  @spec generate_frame(binary, atom) :: binary
   def generate_frame(payload, :text) do
     <<@fin::bits, 0::size(3), @text::bits, @unmasked::bits, byte_size(payload)::size(7),
       payload::binary>>

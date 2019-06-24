@@ -3,7 +3,17 @@ defmodule Stargate.Vessel.Config do
   The configuration struct for the `Stargate` Webserver.
   """
 
-  @type t :: %__MODULE__{
+  alias Stargate.Vessel.Config
+
+  @typedoc """
+  The configuration that is passed to the Webserver when started,
+  and subsequently passed to every TCP process when spawned.
+
+  The configuration contains both general server level configuration
+  values (IP address, port, hosts, etc.) and TCP Socket level configuration
+  values (socket process, socket state, socket handler, etc.)
+  """
+  @type t :: %Config{
           buf: binary,
           hosts: map,
           ip: tuple,

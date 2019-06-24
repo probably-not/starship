@@ -15,8 +15,10 @@ defmodule Stargate.Vessel do
 
   @typedoc """
   The connection state of the port and socket.
+
   If set to `:close`, then the socket and port will return a Connection: Close header
   and close.
+
   If set to `:keepalive`, then the socket and port will return a Connection: Keep-Alive header
   and stay open.
   """

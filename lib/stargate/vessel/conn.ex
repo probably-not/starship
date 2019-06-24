@@ -4,12 +4,18 @@ defmodule Stargate.Vessel.Conn do
   """
 
   alias Stargate.Errors
+  alias Stargate.Vessel.Conn
   alias Stargate.Vessel.Conn.Method
 
+  @typedoc "The body of an HTTP request"
   @type body :: binary
+  @typedoc "An HTTP header"
   @type header :: {binary, binary}
+  @typedoc "HTTP header list"
   @type headers :: [header]
+  @typedoc "The HTTP version of a request"
   @type http_version :: :"HTTP/0.9" | :"HTTP/1.0" | :"HTTP/1.1" | :"HTTP/2.0" | :"HTTP/3.0"
+  @typedoc "The parsed query of an HTTP request"
   @type query :: map
 
   @http_versions %{
@@ -32,7 +38,12 @@ defmodule Stargate.Vessel.Conn do
     "PATCH" => Method.patch()
   }
 
-  @type t :: %__MODULE__{
+  @typedoc """
+  A connection struct for an HTTP request made to the server.
+
+  This defines all parts of the connection made to the server.
+  """
+  @type t :: %Conn{
           body: body,
           headers: headers,
           http_version: http_version,
