@@ -1,14 +1,14 @@
-defmodule Starship.Acceptor do
+defmodule Starship.Drive do
   @moduledoc """
   The TCP Acceptor used by the `Starship` Webserver.
 
-  A `Starship.Acceptor` is started by the `Starship.Acceptor.Supervisor` per open socket.
+  A `Starship.Drive` is started by the `Starship.Drive.Supervisor` per open socket.
   """
 
   require Logger
 
   @doc """
-  The main event loop for the `Starship.Acceptor` process.
+  The main event loop for the `Starship.Drive` process.
 
   This loop listens for messages and spawns a `Starship.Reactor`
   process per request that arrives on the socket.

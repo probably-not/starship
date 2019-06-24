@@ -1,6 +1,6 @@
-defmodule Starship.Acceptor.Supervisor do
+defmodule Starship.Drive.Supervisor do
   @moduledoc """
-  The TCP Acceptor supervisor, which spawns and supervises `Starship.Acceptor`
+  The TCP Acceptor supervisor, which spawns and supervises `Starship.Drive`
   processes to handle the requests to the `Starship` Webserver.
   """
 
@@ -20,7 +20,7 @@ defmodule Starship.Acceptor.Supervisor do
     acceptors =
       if to_spawn > 0 do
         pids =
-          Enum.map(1..to_spawn, fn _ -> :erlang.spawn_link(Starship.Acceptor, :loop, [config]) end)
+          Enum.map(1..to_spawn, fn _ -> :erlang.spawn_link(Starship.Drive, :loop, [config]) end)
 
         acceptors ++ pids
       else
@@ -31,7 +31,7 @@ defmodule Starship.Acceptor.Supervisor do
 
     receive do
       {:EXIT, pid, reason} ->
-        Logger.warn(["Exit from Starship.Acceptor ", inspect(pid), ", Reason: ", inspect(reason)])
+        Logger.warn(["Exit from Starship.Drive ", inspect(pid), ", Reason: ", inspect(reason)])
         loop(config)
 
       unknown ->
