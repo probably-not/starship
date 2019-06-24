@@ -4,6 +4,7 @@ defmodule Stargate.Handler.Wildcard.Websocket do
   "Returning: " followed by the text that is sent to the socket.
   """
 
+  use Stargate.Handlers.Websocket
   alias Stargate.Vessel.Conn
 
   @spec connect(Conn.t(), map) :: {:ok, map} | :reject
@@ -14,15 +15,5 @@ defmodule Stargate.Handler.Wildcard.Websocket do
   @spec handle_text(bitstring, map) :: {binary, map}
   def handle_text(text, config) do
     {"Returning: #{text}", config}
-  end
-
-  @spec handle_binary(binary, map) :: {binary, map}
-  def handle_binary(binary, config) do
-    {"Returning: #{binary}", config}
-  end
-
-  @spec handle_close(binary, map) :: {binary, map}
-  def handle_close(binary, config) do
-    {"Returning: #{binary}", config}
   end
 end
