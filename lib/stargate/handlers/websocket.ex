@@ -18,19 +18,16 @@ defmodule Stargate.Handlers.Websocket do
       @before_compile Websocket
 
       @doc false
-      @spec handle_text(bitstring, map) :: {binary, map}
       def handle_text(text, config) do
         {text, config}
       end
 
       @doc false
-      @spec handle_binary(binary, map) :: {binary, map}
       def handle_binary(binary, config) do
         {binary, config}
       end
 
       @doc false
-      @spec handle_close(binary, map) :: {binary, map}
       def handle_close(binary, config) do
         {binary, config}
       end
