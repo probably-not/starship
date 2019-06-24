@@ -1,4 +1,4 @@
-# Stargate
+# Starship
 A Fast Webserver written in Elixir and Erlang.
 
 ## Status
@@ -20,18 +20,18 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
     - [x] On HTTP/1.1 requests, we only close the connection if a "Connection: Close" Header is received from the client, or if we send a "Connection: Close" Header from the server.
   - [ ] Support for HTTP/2.0.
     - [ ] Read the HTTP/2.0 standards and RFCs in order to support it correctly
-  - [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Stargate.warp_in` function.
+  - [x] Document how SSL options need to look in order to pass them through the configuration in the initial `Starship.warp_in` function.
 - [ ] Optimize the parsing of request data for fastest performance.
   - [x] Header Parsing and Organizing
   - [ ] Cookie Parsing and Organizing
   - [ ] Body Parsing and Organizing
 - [ ] Websocket Standards
-  - [x] Make sure that Websocket Handshake and Handlers return the correct values for `Stargate.Vessel.connection_state`.
+  - [x] Make sure that Websocket Handshake and Handlers return the correct values for `Starship.Vessel.connection_state`.
   - [ ] Parsing Websocket Frames.
     - [ ] Receiving Data Frames:
       - [x] Text
       - [ ] Binary
-        - Stargate should be able to decode the data frames as binary, however, the application using Stargate needs to be able to receive and handle binary data, otherwise we will close the connection and return a termination error code
+        - Starship should be able to decode the data frames as binary, however, the application using Starship needs to be able to receive and handle binary data, otherwise we will close the connection and return a termination error code
       - [x] Ping
       - [ ] Continuation/Fragmentation
       - [x] Close
@@ -39,7 +39,7 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
       - [x] Text
       - [ ] Binary
         - Check if encoding server sent data frames as binary is part of the standard
-        - If it is in the standard, Stargate should be able to encode the data frames as binary.
+        - If it is in the standard, Starship should be able to encode the data frames as binary.
       - [x] Pong
       - [x] Close
 - [ ] Extras

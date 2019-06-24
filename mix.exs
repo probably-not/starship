@@ -1,16 +1,16 @@
-defmodule Stargate.Mixfile do
+defmodule Starship.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :stargate,
+      app: :starship,
       version: "0.0.1",
       elixir: "~> 1.8",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       package: package(),
-      name: "Stargate",
-      source_url: "https://github.com/coby-spotim/stargate",
+      name: "Starship",
+      source_url: "https://github.com/coby-spotim/starship",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       # elixirc_options: [warnings_as_errors: true],
@@ -23,7 +23,7 @@ defmodule Stargate.Mixfile do
         "coveralls.html": :test
       ],
       # The main page in the docs
-      docs: [main: "Stargate", extras: ["README.md"]],
+      docs: [main: "Starship", extras: ["README.md"]],
       dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}, plt_add_deps: :transitive]
     ]
   end
@@ -54,7 +54,7 @@ defmodule Stargate.Mixfile do
       # These are the default files included in the package
       files: ["lib", "mix.exs", "README.md"],
       maintainers: ["Coby Benveniste"],
-      links: %{"GitHub" => "https://github.com/coby-spotim/stargate"},
+      links: %{"GitHub" => "https://github.com/coby-spotim/starship"},
       licenses: ["MIT License"]
     ]
   end
