@@ -74,10 +74,20 @@ defmodule Starship.Reactor.Websocket.Frame do
     end
   end
 
-  def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, _rest::bits>> = _frame) do
-    # credo:disable-for-next-line
-    # TODO: Parse Not Final Continuation Frame
-    {:error, :not_implemented_yet}
+  def parse_frame(<<@fin::bits, _::bits-size(3), @continuation::bits, rest::bits>> = _frame) do
+    case parse(rest) do
+      # credo:disable-for-next-line
+      ## TODO: Need to pass the opcode here to know which type of fragmentation is happening
+      {:ok, payload} -> {:ok, :fin, :masked, :text, payload}
+      error -> error
+    end
+  end
+
+  def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, rest::bits>> = _frame) do
+    case parse(rest) do
+      {:ok, payload} -> {:ok, :not_fin, :masked, :continuation, payload}
+      error -> error
+    end
   end
 
   def parse_frame(<<@not_fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
