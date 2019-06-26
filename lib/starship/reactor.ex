@@ -66,7 +66,7 @@ defmodule Starship.Reactor do
           on_ws_send(tuple, config)
       after
         @reactor_timeout ->
-          :close
+          on_close(config)
       end
 
     loop(config)

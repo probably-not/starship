@@ -14,7 +14,7 @@ defmodule Starship.Reactor.Response do
 
     headers = [
       Enum.map(response_headers, fn {k, v} -> [k, ": ", v, "\r\n"] end),
-      ["Content-Length: ", to_string(byte_size(body)), "\r\n"]
+      ["Content-Length: ", to_string(byte_size(body)), "\r\n\r\n"]
     ]
 
     [response_head, headers, body]
