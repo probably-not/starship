@@ -3,10 +3,11 @@ defmodule Starship.Reactor.Websocket.Frame do
   A websocket frame helper, used to parse and generate websocket frames.
   """
 
-  @typep opcode :: :continuation | :text | :binary | :close | :ping | :pong
   @typep fin_bit :: :fin | :not_fin
   @typep mask_bit :: :masked | :unmasked
   @typep payload :: bitstring | binary | nil
+  @typedoc "A websocket opcode"
+  @type opcode :: :continuation | :text | :binary | :close | :ping | :pong
   @typedoc "A properly parsed websocket frame"
   @type frame :: {:ok, fin_bit, mask_bit, opcode, payload}
 
@@ -37,28 +38,28 @@ defmodule Starship.Reactor.Websocket.Frame do
   @doc """
   Parses a websocket frame into a readable payload (bitstring, binary, or nil values).
   """
-  @spec parse_frame(binary) :: frame | parse_error
-  def parse_frame(<<@fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
+  @spec parse_frame(binary, opcode) :: frame | parse_error
+  def parse_frame(<<@fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame, _opcode) do
     case parse(rest) do
       {:ok, payload} -> {:ok, :fin, :masked, :text, payload}
       error -> error
     end
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @binary::bits, _rest::bits>> = _frame) do
+  def parse_frame(<<@fin::bits, _::bits-size(3), @binary::bits, _rest::bits>>, _opcode) do
     # credo:disable-for-next-line
     # TODO: Parse Final Binary Frame
     {:error, :not_implemented_yet}
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @close::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@fin::bits, _::bits-size(3), @close::bits, rest::bits>>, _opcode) do
     case parse(rest) do
       {:ok, payload} -> {:ok, :fin, :masked, :close, payload}
       error -> error
     end
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@fin::bits, _::bits-size(3), @ping::bits, rest::bits>>, _opcode) do
     if masked?(rest) do
       {:ok, :fin, :masked, :ping, rest}
     else
@@ -66,7 +67,7 @@ defmodule Starship.Reactor.Websocket.Frame do
     end
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@fin::bits, _::bits-size(3), @pong::bits, rest::bits>>, _opcode) do
     if masked?(rest) do
       {:ok, :fin, :masked, :pong, nil}
     else
@@ -74,36 +75,34 @@ defmodule Starship.Reactor.Websocket.Frame do
     end
   end
 
-  def parse_frame(<<@fin::bits, _::bits-size(3), @continuation::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@fin::bits, _::bits-size(3), @continuation::bits, rest::bits>>, opcode) do
     case parse(rest) do
-      # credo:disable-for-next-line
-      ## TODO: Need to pass the opcode here to know which type of fragmentation is happening
-      {:ok, payload} -> {:ok, :fin, :masked, :text, payload}
+      {:ok, payload} -> {:ok, :fin, :masked, opcode, payload}
       error -> error
     end
   end
 
-  def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@not_fin::bits, _::bits-size(3), @continuation::bits, rest::bits>>, opcode) do
     case parse(rest) do
-      {:ok, payload} -> {:ok, :not_fin, :masked, :continuation, payload}
+      {:ok, payload} -> {:ok, :not_fin, :masked, opcode, payload}
       error -> error
     end
   end
 
-  def parse_frame(<<@not_fin::bits, _::bits-size(3), @text::bits, rest::bits>> = _frame) do
+  def parse_frame(<<@not_fin::bits, _::bits-size(3), @text::bits, rest::bits>>, _opcode) do
     case parse(rest) do
       {:ok, payload} -> {:ok, :not_fin, :masked, :text, payload}
       error -> error
     end
   end
 
-  def parse_frame(<<@not_fin::bits, _::bits-size(3), @binary::bits, _rest::bits>> = _frame) do
+  def parse_frame(<<@not_fin::bits, _::bits-size(3), @binary::bits, _rest::bits>>, _opcode) do
     # credo:disable-for-next-line
     # TODO: Parse Not Final Binary Frame
     {:error, :not_implemented_yet}
   end
 
-  def parse_frame(_frame), do: {:error, :no_fin_and_opcode_match}
+  def parse_frame(_frame, _opcode), do: {:error, :no_fin_and_opcode_match}
 
   @spec parse(bitstring) :: {:ok, binary} | parse_error
   defp parse(<<@masked::bits, rest::bits>> = _frame) do

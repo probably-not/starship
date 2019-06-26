@@ -22,7 +22,8 @@ defmodule Starship.Reactor.Config do
           socket: port(),
           transport: atom,
           handler: module,
-          state: :ws | :http_body | nil
+          state: :ws | :http_body | nil,
+          ws_fragment_opcode: Starship.Reactor.Websocket.Frame.opcode()
         }
 
   defstruct buf: "",
@@ -33,5 +34,6 @@ defmodule Starship.Reactor.Config do
             socket: nil,
             transport: :gen_tcp,
             handler: nil,
-            state: nil
+            state: nil,
+            ws_fragment_opcode: :text
 end

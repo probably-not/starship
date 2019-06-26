@@ -15,14 +15,15 @@ defmodule Starship.Reactor.Websocket do
 
   @spec handle_ws_frame(binary, map) :: {Reactor.connection_state(), map}
   def handle_ws_frame(frame, config) do
-    case Websocket.Frame.parse_frame(frame) do
+    fragmentation_opcode = Map.get(config, :ws_fragment_opcode)
+
+    case Websocket.Frame.parse_frame(frame, fragmentation_opcode) do
       {:ok, :fin, :masked, :text, payload} -> handle_text(payload, config)
       # {:ok, :fin, :masked, :binary, payload} -> handle_binary(payload, config)
       {:ok, :fin, :masked, :close, payload} -> handle_close(payload, config)
       {:ok, :fin, :masked, :ping, payload} -> handle_ping(payload, config)
       {:ok, :fin, :masked, :pong, nil} -> handle_pong(config)
-      {:ok, :not_fin, :masked, :text, buffer} -> handle_fragment(buffer, config)
-      {:ok, :not_fin, :masked, :continuation, buffer} -> handle_fragment(buffer, config)
+      {:ok, :not_fin, :masked, opcode, buffer} -> handle_fragment(buffer, config, opcode)
       # {:ok, :not_fin, :masked, :binary, payload} -> handle_fragment(payload, config)
       {:error, reason} -> handle_error(reason, config)
     end
@@ -76,8 +77,9 @@ defmodule Starship.Reactor.Websocket do
     {:close, config}
   end
 
-  @spec handle_fragment(bitstring, map) :: {:keepalive, map}
-  def handle_fragment(buffer, config) do
+  @spec handle_fragment(bitstring, map, Websocket.Frame.opcode()) :: {:keepalive, map}
+  def handle_fragment(buffer, config, fragment_opcode) do
+    config = Map.put(config, :ws_fragment_opcode, fragment_opcode)
     buf = Map.get(config, :buf, <<>>)
     {:keepalive, Map.put(config, :buf, buf <> buffer)}
   end
