@@ -1,5 +1,5 @@
 # Starship
-A Fast Webserver written in Elixir and Erlang.
+A Fast Webserver written in Elixir.
 
 ## Status
 Currently, this is very much in alpha. I've taken the great work done by [**@van163**](https://github.com/vans163/stargate) as a starting point and inspiration, in order to build up a fast Webserver in pure Elixir.
@@ -10,7 +10,8 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
 - Simple support for HTTP/1.1 and below (No HTTP/2.0 or HTTP/3.0 yet)
 - SSL (by passing SSL options to the config, which are subsequently passed to the :ssl erlang underlying application)
 - Websockets
-  - Partially implemented, frames are not fully working yet since the parser is not completely implemented
+  - I've tested basic text frames, and I've built out the functionality for fragmentations, however I need to find a way to test it
+  - Binary frames are currently not implemented
 
 ## Roadmap/TODOS
 - [ ] HTTP Standards
@@ -33,7 +34,7 @@ I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding
       - [ ] Binary
         - Starship should be able to decode the data frames as binary, however, the application using Starship needs to be able to receive and handle binary data, otherwise we will close the connection and return a termination error code
       - [x] Ping
-      - [ ] Continuation/Fragmentation
+      - [x] Continuation/Fragmentation
       - [x] Close
     - [ ] Generate Server Sent Data Frames:
       - [x] Text
