@@ -109,7 +109,7 @@ defmodule Starship do
 
     config = Map.merge(config, %{listen_socket: lsocket, buf: <<>>})
 
-    :erlang.spawn(Starship.Drive.Engine, :start, [config])
+    spawn(Starship.Drive.Engine, :start, [config])
   end
 
   @doc """

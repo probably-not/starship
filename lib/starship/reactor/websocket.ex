@@ -35,7 +35,7 @@ defmodule Starship.Reactor.Websocket do
     {ws_handler, opts} = Reactor.get_host_handler(:ws, host, conn.path, config.hosts)
     config = Map.put(config, :handler, ws_handler)
 
-    case :erlang.apply(ws_handler, :connect, [conn, config]) do
+    case apply(ws_handler, :connect, [conn, config]) do
       :reject -> {:close, rejected_handshake(config)}
       {:ok, config} -> {:keepalive, successful_handshake(conn, config, opts)}
     end

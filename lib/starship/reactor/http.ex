@@ -11,7 +11,7 @@ defmodule Starship.Reactor.Http do
   def handle_http_request(%Conn{http_version: http_version} = conn, config) do
     {_, host} = List.keyfind(conn.headers, "host", 0)
     {http_handler, _} = Reactor.get_host_handler(:http, host, conn.path, config.hosts)
-    {code, response_headers, body, config} = :erlang.apply(http_handler, :http, [conn, config])
+    {code, response_headers, body, config} = apply(http_handler, :http, [conn, config])
     {connection_state, connection_header} = connection_header(conn.headers, http_version)
 
     response_io_list =
@@ -25,7 +25,7 @@ defmodule Starship.Reactor.Http do
   def handle_request_with_body(%Conn{} = conn, buf, config) do
     # add parsing more content types
     {_, clen} = List.keyfind(conn.headers, "content-length", 0)
-    clen = :erlang.binary_to_integer(clen)
+    clen = String.to_integer(clen)
 
     case buf do
       <<body::binary-size(clen), buf::binary>> ->

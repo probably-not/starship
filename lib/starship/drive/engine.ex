@@ -15,12 +15,11 @@ defmodule Starship.Drive.Engine do
   @spec loop(map) :: no_return
   def loop(config) do
     acceptors = Map.get(config, :acceptors, [])
-    to_spawn = :erlang.system_info(:schedulers) - length(acceptors)
+    to_spawn = System.schedulers() - length(acceptors)
 
     acceptors =
       if to_spawn > 0 do
-        pids =
-          Enum.map(1..to_spawn, fn _ -> :erlang.spawn_link(Starship.Drive, :loop, [config]) end)
+        pids = Enum.map(1..to_spawn, fn _ -> spawn_link(Starship.Drive, :loop, [config]) end)
 
         acceptors ++ pids
       else

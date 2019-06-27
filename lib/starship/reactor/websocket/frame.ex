@@ -3,6 +3,8 @@ defmodule Starship.Reactor.Websocket.Frame do
   A websocket frame helper, used to parse and generate websocket frames.
   """
 
+  import Bitwise, only: [bxor: 2]
+
   @typep fin_bit :: :fin | :not_fin
   @typep mask_bit :: :masked | :unmasked
   @typep payload :: bitstring | binary | nil
@@ -136,7 +138,7 @@ defmodule Starship.Reactor.Websocket.Frame do
     Enum.reduce(0..(payload_length - 1), "", fn i, decoded ->
       <<mask>> = binary_part(masking_key, rem(i, 4), 1)
       <<encoded>> = binary_part(payload, i, 1)
-      decoded <> <<:erlang.bxor(encoded, mask)>>
+      decoded <> <<bxor(encoded, mask)>>
     end)
   end
 
