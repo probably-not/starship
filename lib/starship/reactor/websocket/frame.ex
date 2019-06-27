@@ -109,14 +109,7 @@ defmodule Starship.Reactor.Websocket.Frame do
     {payload_length, masked_payload} = parse_payload_length(rest)
     <<masking_key::bits-size(32), payload::bits>> = masked_payload
 
-    decoded =
-      Enum.reduce(0..(payload_length - 1), "", fn i, decoded ->
-        <<mask>> = binary_part(masking_key, rem(i, 4), 1)
-        <<encoded>> = binary_part(payload, i, 1)
-        decoded <> <<:erlang.bxor(encoded, mask)>>
-      end)
-
-    {:ok, decoded}
+    {:ok, decode_payload(masking_key, payload, payload_length)}
   end
 
   defp parse(<<@unmasked::bits, _rest::bits>> = _frame), do: {:error, :unmasked_frame}
@@ -135,6 +128,16 @@ defmodule Starship.Reactor.Websocket.Frame do
       _ ->
         {first_len, rest}
     end
+  end
+
+  defp decode_payload(_masking_key, _payload, 0), do: <<>>
+
+  defp decode_payload(masking_key, payload, payload_length) do
+    Enum.reduce(0..(payload_length - 1), "", fn i, decoded ->
+      <<mask>> = binary_part(masking_key, rem(i, 4), 1)
+      <<encoded>> = binary_part(payload, i, 1)
+      decoded <> <<:erlang.bxor(encoded, mask)>>
+    end)
   end
 
   @spec masked?(binary) :: boolean
