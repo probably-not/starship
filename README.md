@@ -6,6 +6,23 @@ Currently, this is very much in alpha. I've taken the great work done by [**@van
 
 I've fully rewritten the Elixir branch of @van163's work, cleaning it up, adding more Elixir structure and features to the project, splitting things into smaller and simpler functions, and adding proper functionalities to support various HTTP standards that the original server didn't support.
 
+## Installation
+
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+by adding `starship` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:starship, "~> 0.1.0"}
+  ]
+end
+```
+
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
+be found at [https://hexdocs.pm/pilot](https://hexdocs.pm/pilot).
+
 ## Current Features
 - Simple support for HTTP/1.1 and below (No HTTP/2.0 or HTTP/3.0 yet)
 - SSL (by passing SSL options to the config, which are subsequently passed to the :ssl erlang underlying application)
