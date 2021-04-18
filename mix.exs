@@ -10,7 +10,7 @@ defmodule Starship.Mixfile do
       start_permanent: Mix.env() == :prod,
       package: package(),
       name: "Starship",
-      source_url: "https://github.com/coby-spotim/starship",
+      source_url: "https://github.com/probably-not/starship",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       # elixirc_options: [warnings_as_errors: true],
@@ -54,7 +54,7 @@ defmodule Starship.Mixfile do
       # These are the default files included in the package
       files: ["lib", "mix.exs", "README.md"],
       maintainers: ["Coby Benveniste"],
-      links: %{"GitHub" => "https://github.com/coby-spotim/starship"},
+      links: %{"GitHub" => "https://github.com/probably-not/starship"},
       licenses: ["MIT License"]
     ]
   end

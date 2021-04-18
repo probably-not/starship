@@ -62,7 +62,7 @@ be found at [https://hexdocs.pm/pilot](https://hexdocs.pm/pilot).
       - [x] Close
 - [ ] Extras
   - [ ] Write macros for building simple APIs (similar to how Plug works for Cowboy)
-    - [ ] Every Starship needs a [**Pilot**](https://github.com/coby-spotim/pilot)
+    - [ ] Every Starship needs a [**Pilot**](https://github.com/probably-not/pilot)
     - Alternatively, write an adapter for Plug
   - [ ] Create benchmarks on all aspects and write them out
 
