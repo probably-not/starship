@@ -14,14 +14,14 @@ by adding `starship` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:starship, "~> 0.1.0"}
+    {:starship, "~> 0.0.1"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/pilot](https://hexdocs.pm/pilot).
+be found at [https://hexdocs.pm/starship](https://hexdocs.pm/starship).
 
 ## Current Features
 - Simple support for HTTP/1.1 and below (No HTTP/2.0 or HTTP/3.0 yet)
