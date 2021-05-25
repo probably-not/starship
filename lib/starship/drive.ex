@@ -20,7 +20,7 @@ defmodule Starship.Drive do
         :ok
 
       error ->
-        Logger.error(["PRIM INET Error: ", inspect(error), inspect(config)])
+        Logger.error(["PRIM INET Error: ", inspect(error), " on config ", inspect(config)])
         Process.exit(self(), :unknown_error)
     end
 
