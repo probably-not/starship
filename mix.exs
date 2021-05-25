@@ -11,6 +11,7 @@ defmodule Starship.Mixfile do
       package: package(),
       name: "Starship",
       source_url: "https://github.com/probably-not/starship",
+      homepage_url: "https://github.com/probably-not/starship",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       # elixirc_options: [warnings_as_errors: true],
