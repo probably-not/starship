@@ -53,10 +53,10 @@ defmodule Starship.Mixfile do
     [
       description: "High Performance Low Level Elixir Webserver",
       # These are the default files included in the package
-      files: ["lib", "mix.exs", "README.md"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE"],
       maintainers: ["Coby Benveniste"],
       links: %{"GitHub" => "https://github.com/probably-not/starship"},
-      licenses: ["MIT License"]
+      licenses: ["MIT"]
     ]
   end
 
