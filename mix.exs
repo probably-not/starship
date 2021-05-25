@@ -43,7 +43,7 @@ defmodule Starship.Mixfile do
       ## Testing and Development Dependencies
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.14.1", only: :test},
       {:remixed_remix, "~> 2.0.2", only: :dev}
     ]
@@ -66,7 +66,7 @@ defmodule Starship.Mixfile do
   defp aliases do
     [
       quality: ["format", "credo --strict", "dialyzer"],
-      ci: ["test", "format --check-formatted", "credo --strict", "dialyzer --halt-exit-status"]
+      ci: ["test", "format --check-formatted", "credo --strict", "dialyzer"]
     ]
   end
 end
