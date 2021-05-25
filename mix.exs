@@ -55,7 +55,7 @@ defmodule Starship.Mixfile do
     [
       description: description(),
       # These are the default files included in the package
-      files: ["lib", "mix.exs", "README.md", "LICENSE"],
+      files: ~w(lib mix.exs README* LICENSE* CHANGELOG*),
       maintainers: ["Coby Benveniste"],
       links: %{"GitHub" => "https://github.com/probably-not/starship"},
       licenses: ["MIT"]
