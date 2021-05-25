@@ -42,7 +42,7 @@ defmodule Starship do
       iex> pid = Starship.warp_in()
       iex> is_pid(pid)
       true
-      iex> Process.exit(pid, :normal)
+      iex> Process.exit(pid, :closed)
   """
   @spec warp_in :: pid
   def warp_in, do: warp_in(@default_configuration)
@@ -77,7 +77,7 @@ defmodule Starship do
       iex(2)> pid = Starship.warp_in(config)
       iex(3)> is_pid(pid)
       true
-      iex(4)> Process.exit(pid, :normal)
+      iex(4)> Process.exit(pid, :closed)
   """
   @spec warp_in(config :: map) :: pid
   def warp_in(config) when is_map(config) do
