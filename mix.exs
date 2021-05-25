@@ -10,6 +10,7 @@ defmodule Starship.Mixfile do
       start_permanent: Mix.env() == :prod,
       package: package(),
       name: "Starship",
+      description: description(),
       source_url: "https://github.com/probably-not/starship",
       homepage_url: "https://github.com/probably-not/starship",
       deps: deps(),
