@@ -5,7 +5,7 @@ defmodule Starship.Mixfile do
     [
       app: :starship,
       version: "0.0.1",
-      elixir: "~> 1.8",
+      elixir: "~> 1.12",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       package: package(),
@@ -24,7 +24,7 @@ defmodule Starship.Mixfile do
       ],
       # The main page in the docs
       docs: [main: "Starship", extras: ["README.md"]],
-      dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}, plt_add_deps: :transitive]
+      dialyzer: [plt_file: {:no_warn, "priv/plts/dialyzer.plt"}, plt_add_deps: :app_tree]
     ]
   end
 
@@ -40,10 +40,10 @@ defmodule Starship.Mixfile do
   def deps do
     [
       ## Testing and Development Dependencies
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:credo, "~> 1.0.0", only: :dev, runtime: false},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:excoveralls, "~> 0.14.1", only: :test},
       {:remixed_remix, "~> 2.0.2", only: :dev}
     ]
   end
