@@ -15,7 +15,14 @@ defmodule Starship.Drive do
   """
   @spec loop(map) :: no_return
   def loop(config) do
-    {:ok, _} = :prim_inet.async_accept(config.listen_socket, -1)
+    case :prim_inet.async_accept(config.listen_socket, -1) do
+      {:ok, _} ->
+        :ok
+
+      error ->
+        Logger.error(["PRIM INET Error: ", inspect(error), inspect(config)])
+        Process.exit(self(), :unknown_error)
+    end
 
     receive do
       {:inet_async, _listen_socket, _, {:ok, csocket}} ->
