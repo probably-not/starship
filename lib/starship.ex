@@ -46,7 +46,7 @@ defmodule Starship do
   @spec warp_in :: pid
   def warp_in, do: warp_in(@default_configuration)
 
-  @doc ~S"""
+  @doc """
   Starts the webserver with the desired configuration.
 
   The `config` passed to this function should be a map
