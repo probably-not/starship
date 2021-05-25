@@ -15,7 +15,7 @@ defmodule Starship.Mixfile do
       homepage_url: "https://github.com/probably-not/starship",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
-      # elixirc_options: [warnings_as_errors: true],
+      elixirc_options: [warnings_as_errors: true],
       aliases: aliases(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
