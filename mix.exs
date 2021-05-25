@@ -52,13 +52,19 @@ defmodule Starship.Mixfile do
 
   defp package do
     [
-      description: "High Performance Low Level Elixir Webserver",
+      description: description(),
       # These are the default files included in the package
       files: ["lib", "mix.exs", "README.md", "LICENSE"],
       maintainers: ["Coby Benveniste"],
       links: %{"GitHub" => "https://github.com/probably-not/starship"},
       licenses: ["MIT"]
     ]
+  end
+
+  defp description do
+    """
+    A High Performance Low Level Elixir Webserver.
+    """
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
