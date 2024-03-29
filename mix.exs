@@ -23,7 +23,8 @@ defmodule Starship.Mixfile do
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
-        "coveralls.html": :test
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
       ],
       # The main page in the docs
       docs: [main: "Starship", extras: ["README.md"]],
@@ -43,11 +44,19 @@ defmodule Starship.Mixfile do
   def deps do
     [
       ## Testing and Development Dependencies
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.14.1", only: :test},
-      {:remixed_remix, "~> 2.0.2", only: :dev}
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:remixed_remix, "~> 2.0.2", only: :dev},
+      # This is a replacement for the erlex dependency found at https://github.com/asummers/erlex
+      # erlex is transitively used by others in our test and dev dependencies, but it has warnings during compilation
+      # and the project hasn't been maintained in 3 years, so I forked it just to solve the warnings.
+      {:erlex,
+       git: "https://github.com/probably-not/erlex.git",
+       override: true,
+       only: [:dev, :test],
+       runtime: false}
     ]
   end
 

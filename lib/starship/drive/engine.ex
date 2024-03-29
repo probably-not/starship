@@ -30,7 +30,7 @@ defmodule Starship.Drive.Engine do
 
     receive do
       {:EXIT, pid, reason} ->
-        Logger.warn(["Exit from Starship.Drive ", inspect(pid), ", Reason: ", inspect(reason)])
+        Logger.warning(["Exit from Starship.Drive ", inspect(pid), ", Reason: ", inspect(reason)])
         loop(config)
 
       unknown ->
